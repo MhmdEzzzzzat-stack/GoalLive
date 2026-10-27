@@ -699,3 +699,188 @@ body{
 @media (max-width: 390px) {
   .hero-card.hero-cinematic { background-size: cover, cover, auto 88%; }
 }
+
+
+/* GoalLive Premium UI pass — layout, imagery, motion and accessibility */
+:root{
+  --gl-lime:#b8ff45;
+  --gl-mint:#46f5b2;
+  --gl-surface:rgba(8,22,37,.9);
+  --gl-stroke:rgba(151,188,213,.16);
+  --gl-soft-shadow:0 22px 58px rgba(0,0,0,.24);
+}
+html{scroll-behavior:smooth;scroll-padding-top:105px}
+body{
+  background:
+    radial-gradient(ellipse at 52% -18%,rgba(25,99,133,.27),transparent 48%),
+    radial-gradient(ellipse at 2% 42%,rgba(184,255,69,.055),transparent 28%),
+    #050d18;
+  overflow-x:hidden;
+}
+body:before{
+  content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;opacity:.12;
+  background-image:radial-gradient(rgba(190,225,242,.22) .65px,transparent .65px);
+  background-size:22px 22px;
+}
+.topline{height:32px;font-size:10px;letter-spacing:.25px}
+.header{max-width:1680px;padding-inline:clamp(16px,2.4vw,38px);gap:clamp(18px,2.2vw,38px)}
+.logo{transition:transform .22s ease}
+.logo:hover{transform:translateY(-1px)}
+.logo-ball{border-radius:15px;background:linear-gradient(145deg,#173a4c,#081c2e)}
+.main-nav a{transition:color .2s ease}
+.round-btn,.date-picker button,.favorites-filter,.tab,.refresh-btn{
+  transition:transform .2s ease,border-color .2s ease,background .2s ease,box-shadow .2s ease;
+}
+.round-btn:hover,.date-picker button:hover,.favorites-filter:hover,.tab:hover,.refresh-btn:hover{transform:translateY(-2px);border-color:rgba(184,255,69,.55);box-shadow:0 8px 22px rgba(0,0,0,.18)}
+.layout{max-width:1680px;padding:clamp(16px,2.2vw,34px);gap:clamp(14px,1.35vw,22px);grid-template-columns:minmax(220px,.78fr) minmax(420px,2.05fr) minmax(260px,.92fr)}
+.left-column,.right-column,.center-column{gap:20px}
+.panel{
+  border-radius:20px;
+  background:linear-gradient(150deg,rgba(12,31,50,.97),rgba(5,15,28,.97));
+  border:1px solid var(--gl-stroke);
+  box-shadow:0 14px 40px rgba(0,0,0,.16),inset 0 1px 0 rgba(255,255,255,.025);
+  transition:transform .24s ease,border-color .24s ease,box-shadow .24s ease;
+}
+.panel:hover{transform:translateY(-2px);border-color:rgba(184,255,69,.24);box-shadow:0 22px 48px rgba(0,0,0,.22),0 0 0 1px rgba(184,255,69,.025)}
+.panel-title{gap:12px}
+.panel-title h2,.section-head h2{letter-spacing:-.35px}
+.mini-label{color:#9bb3c7;letter-spacing:1.15px}
+.title-icon{border:1px solid rgba(184,255,69,.14);background:rgba(184,255,69,.06);border-radius:12px}
+.hero-card.hero-cinematic{
+  min-height:clamp(410px,34vw,520px);
+  border-radius:26px;
+  border:1px solid rgba(184,255,69,.28);
+  box-shadow:0 28px 75px rgba(0,0,0,.34),inset 0 1px 0 rgba(255,255,255,.08);
+  background-image:
+    linear-gradient(90deg,rgba(3,8,13,.98) 0%,rgba(3,8,13,.88) 34%,rgba(3,8,13,.38) 65%,rgba(3,8,13,.12) 100%),
+    linear-gradient(0deg,rgba(3,8,13,.68),transparent 62%),
+    url("https://wallpapers.com/images/hd/cr7-ronaldo-back-dibc9onjmkdaf0be.jpg");
+  background-repeat:no-repeat;
+  background-size:cover,cover,auto 125%;
+  background-position:center,center,left center;
+  animation:glHeroReveal .8s cubic-bezier(.2,.7,.2,1) both;
+}
+.hero-card.hero-cinematic:before{
+  opacity:.5;
+  background:linear-gradient(115deg,transparent 0 28%,rgba(184,255,69,.07) 48%,transparent 70%),repeating-linear-gradient(0deg,transparent 0 34px,rgba(190,225,242,.025) 35px);
+}
+.hero-card.hero-cinematic:after{font-size:clamp(140px,18vw,250px);color:rgba(255,255,255,.035);-webkit-text-stroke:1px rgba(184,255,69,.13)}
+.hero-photo{background-image:none!important;pointer-events:none}
+.hero-content{max-width:66%;padding:clamp(28px,3.2vw,48px);position:relative;z-index:2}
+.hero-tag{display:inline-flex;align-items:center;gap:10px;padding:8px 12px;border:1px solid rgba(184,255,69,.22);border-radius:999px;background:rgba(3,12,21,.55);backdrop-filter:blur(12px);font-size:10px;letter-spacing:1.1px}
+.hero-kicker{font-size:clamp(10px,.85vw,12px);letter-spacing:2px;color:var(--gl-lime);font-weight:800;margin-top:20px}
+.hero-card h1{font-size:clamp(39px,4.2vw,64px);line-height:1.18;letter-spacing:-1.2px;margin:12px 0 14px;text-wrap:balance}
+.hero-card h1 em{color:var(--gl-lime);text-shadow:0 0 35px rgba(184,255,69,.17)}
+.hero-card p{max-width:500px;color:#c1d0dc;font-size:clamp(12px,1vw,14px);line-height:1.95}
+.hero-buttons{gap:10px;margin-top:24px}
+.btn-primary{background:linear-gradient(115deg,#c8ff64,#8fe92c);color:#0a1720;border:1px solid rgba(240,255,210,.7);border-radius:13px;box-shadow:0 12px 28px rgba(151,231,54,.17);font-weight:900;transition:transform .2s ease,box-shadow .2s ease,filter .2s ease}
+.btn-primary:hover{transform:translateY(-3px);filter:saturate(1.08);box-shadow:0 17px 35px rgba(151,231,54,.25)}
+.btn-ghost{border-radius:13px;border:1px solid rgba(214,234,245,.2);background:rgba(4,14,25,.48);backdrop-filter:blur(8px);transition:background .2s ease,border-color .2s ease}
+.btn-ghost:hover{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.38)}
+.hero-live-card{border:1px solid rgba(184,255,69,.23);border-radius:18px;background:linear-gradient(145deg,rgba(6,18,30,.84),rgba(6,18,30,.58));backdrop-filter:blur(18px);box-shadow:0 18px 45px rgba(0,0,0,.2);animation:glFloat 5.5s ease-in-out infinite}
+.live-badge{border-radius:999px;letter-spacing:.65px}
+.hero-footnote{border-top:1px solid rgba(255,255,255,.09);color:#9bb0c2}
+.league-pills{gap:9px;padding:3px 1px 5px}
+.league-pills a{border:1px solid rgba(133,168,194,.17);background:rgba(10,26,43,.78);border-radius:999px;padding:9px 15px;white-space:nowrap;transition:transform .2s ease,border-color .2s ease,color .2s ease,background .2s ease}
+.league-pills a:hover{transform:translateY(-2px);border-color:rgba(184,255,69,.42);color:#eaffc8}
+.league-pills a.active{background:rgba(184,255,69,.1);border-color:rgba(184,255,69,.4);color:var(--gl-lime);box-shadow:inset 0 0 18px rgba(184,255,69,.035)}
+.league-row,.table-link,.broadcaster,.upcoming-item{border-radius:13px;transition:transform .2s ease,background .2s ease,border-color .2s ease}
+.league-row:hover,.table-link:hover,.broadcaster:hover,.upcoming-item:hover{transform:translateX(-3px);background:rgba(184,255,69,.055);border-color:rgba(184,255,69,.2)}
+.league-badge,.table-crest{box-shadow:inset 0 1px 0 rgba(255,255,255,.13),0 5px 12px rgba(0,0,0,.12)}
+.league-badge.purple{background:linear-gradient(145deg,#5b46a5,#2b2754)}
+.league-badge.rainbow{background:linear-gradient(145deg,#f4a7ca,#7148a0 55%,#f4c74d)}
+.league-badge.blue{background:linear-gradient(145deg,#1c9be0,#174e9b)}
+.league-badge.red{background:linear-gradient(145deg,#ef5151,#982c3c)}
+.league-badge.gold{background:linear-gradient(145deg,#f2d48a,#9b742d)}
+.fixtures-panel{overflow:hidden}
+.fixture-heading{align-items:center}
+.date-picker{display:flex;gap:6px;align-items:center}
+.date-picker button{border-radius:10px;min-width:35px;min-height:35px}
+.match-tools{gap:10px}
+.match-search-wrap{border-radius:13px;border:1px solid rgba(133,168,194,.18);background:rgba(3,12,22,.62);transition:border-color .2s ease,box-shadow .2s ease}
+.match-search-wrap:focus-within{border-color:rgba(184,255,69,.55);box-shadow:0 0 0 3px rgba(184,255,69,.07)}
+.match-search-wrap input{color:#f4f8fc}
+.favorites-filter{border-radius:12px}
+.fixture-tabs{gap:7px;flex-wrap:wrap}
+.fixture-tabs .tab{border-radius:10px;padding:8px 12px}
+.fixture-tabs .tab.active{background:rgba(184,255,69,.1);border-color:rgba(184,255,69,.28);color:var(--gl-lime)}
+.refresh-btn{border-radius:10px}
+.status-message{border-radius:12px}
+.matches-list{gap:10px}
+.match-card,.match-item,.fixture-card,.match-row{border-radius:15px;transition:transform .22s ease,border-color .22s ease,background .22s ease,box-shadow .22s ease}
+.match-card:hover,.match-item:hover,.fixture-card:hover,.match-row:hover{transform:translateY(-2px);border-color:rgba(184,255,69,.24);box-shadow:0 14px 28px rgba(0,0,0,.16)}
+.news-grid{gap:13px}
+.news-card{border:1px solid rgba(133,168,194,.15);border-radius:17px;overflow:hidden;background:linear-gradient(150deg,rgba(13,31,49,.96),rgba(6,17,30,.98));transition:transform .24s ease,border-color .24s ease,box-shadow .24s ease}
+.news-card:hover{transform:translateY(-4px);border-color:rgba(184,255,69,.26);box-shadow:0 18px 40px rgba(0,0,0,.2)}
+.news-art{min-height:132px;position:relative;overflow:hidden}
+.news-art:before{content:"";position:absolute;inset:0;opacity:.22;background:repeating-linear-gradient(135deg,transparent 0 16px,rgba(255,255,255,.18) 17px,transparent 18px)}
+.news-art span{filter:drop-shadow(0 12px 18px rgba(0,0,0,.25))}
+.news-art i{letter-spacing:3px;font-weight:900}
+.live-placeholder{border-radius:14px}
+.channel-logo{box-shadow:inset 0 1px 0 rgba(255,255,255,.2),0 7px 16px rgba(0,0,0,.15)}
+.footer{border-top:1px solid rgba(133,168,194,.13)}
+a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(--gl-lime);outline-offset:3px}
+@keyframes glHeroReveal{from{opacity:0;transform:translateY(9px) scale(.995)}to{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes glFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+@media(max-width:1180px){
+ .layout{grid-template-columns:minmax(190px,.75fr) minmax(380px,1.6fr)}
+ .right-column{grid-column:1/-1;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));align-items:start}
+ .hero-card.hero-cinematic{min-height:440px}
+}
+@media(max-width:850px){
+ .header{height:68px;gap:12px}
+ .main-nav{gap:13px;font-size:11px}
+ .layout{padding:16px;grid-template-columns:minmax(0,1fr);gap:16px}
+ .center-column{order:1}.left-column{order:2}.right-column{order:3;grid-column:auto}
+ .left-column,.right-column{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-items:start}
+ .hero-card.hero-cinematic{min-height:470px;background-size:cover,cover,auto 100%;background-position:center,center,left top}
+ .hero-content{max-width:78%;padding:28px}
+ .hero-live-card{top:14px;left:14px}
+}
+@media(max-width:640px){
+ .topline{font-size:9px}
+ .header{padding-inline:13px}
+ .logo{font-size:21px;gap:8px}
+ .logo-ball{width:38px;height:38px}
+ .main-nav{display:none}
+ .mobile-only{display:inline-grid;place-items:center}
+ .layout{padding:12px;gap:14px}
+ .left-column,.right-column{display:flex}
+ .center-column{gap:14px}
+ .panel{border-radius:17px;padding:16px}
+ .hero-card.hero-cinematic{min-height:500px;border-radius:21px;background-image:linear-gradient(0deg,rgba(3,8,13,.98) 0%,rgba(3,8,13,.77) 46%,rgba(3,8,13,.18) 100%),linear-gradient(90deg,rgba(3,8,13,.18),transparent),url("https://wallpapers.com/images/hd/cr7-ronaldo-back-dibc9onjmkdaf0be.jpg");background-size:cover,cover,auto 92%;background-position:center,center,left top}
+ .hero-content{max-width:100%;padding:255px 19px 38px}
+ .hero-tag{font-size:8px;padding:7px 10px}
+ .hero-kicker{margin-top:14px;font-size:9px;letter-spacing:1.5px}
+ .hero-card h1{font-size:clamp(34px,9vw,47px);margin:9px 0 12px}
+ .hero-card p{font-size:12px;max-width:100%}
+ .hero-buttons{display:flex;flex-wrap:wrap;margin-top:18px}
+ .btn-primary,.btn-ghost{padding:11px 13px;font-size:11px}
+ .hero-live-card{top:12px;left:12px;width:155px;padding:11px}
+ .hero-live-card b{font-size:12px}
+ .hero-live-card small{font-size:9px}
+ .hero-footnote{font-size:9px;padding-inline:16px}
+ .league-pills{overflow-x:auto;padding-bottom:7px;scrollbar-width:thin}
+ .league-pills a{flex:0 0 auto;font-size:11px;padding:8px 12px}
+ .fixture-heading{align-items:flex-start;gap:10px}
+ .fixture-heading h2{font-size:19px}
+ .match-tools{flex-wrap:wrap}
+ .match-search-wrap{min-width:0;flex:1 1 100%}
+ .favorites-filter{width:100%;justify-content:center}
+ .fixture-tabs{display:flex;overflow-x:auto;flex-wrap:nowrap;padding-bottom:5px;scrollbar-width:thin}
+ .fixture-tabs>*{flex:0 0 auto}
+ .news-grid{grid-template-columns:1fr}
+ .news-art{min-height:116px}
+ .right-column{gap:14px}
+ .footer{padding:24px 16px}
+}
+@media(max-width:390px){
+ .hero-card.hero-cinematic{min-height:470px;background-size:cover,cover,auto 82%}
+ .hero-content{padding:228px 16px 30px}
+ .hero-card h1{font-size:33px}
+ .hero-live-card{width:144px}
+ .date-picker button{min-width:30px}
+}
+@media(prefers-reduced-motion:reduce){
+ *,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+}
