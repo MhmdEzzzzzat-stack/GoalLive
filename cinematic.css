@@ -371,3 +371,6 @@ body {
   .hero-art { width:66%; left:-17%; top:15%; opacity:.3; }
   .hero-footnote { font-size:8px; }
 }
+
+/* v2 visual polish */
+.hero-card{border-radius:24px}
