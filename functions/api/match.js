@@ -1,5 +1,5 @@
 export async function onRequestGet({ request, env }) {
-  const token = env.FOOTBALL_API_TOKEN;
+  const token = typeof env?.FOOTBALL_API_TOKEN === "string" ? env.FOOTBALL_API_TOKEN.trim() : "";
   if (!token) {
     return json({
       error: "مفتاح البيانات غير مضبوط. أضف FOOTBALL_API_TOKEN في إعدادات Cloudflare Pages."
