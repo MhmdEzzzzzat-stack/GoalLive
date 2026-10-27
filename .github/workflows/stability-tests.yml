@@ -18,4 +18,4 @@ jobs:
         with:
           node-version: 22
       - name: Run stability regression tests
-        run: node --test tests/stability.test.mjs
+        run: node --test tests/*.test.mjs
