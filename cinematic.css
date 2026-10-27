@@ -371,3 +371,25 @@ body {
   .hero-art { width:66%; left:-17%; top:15%; opacity:.3; }
   .hero-footnote { font-size:8px; }
 }
+
+/* v2 visual polish */
+.hero-card{border-radius:24px}
+
+/* GoalLive cinematic refinement */
+:root{--cinema-lime:#b6ff45}
+body{background:radial-gradient(ellipse at 70% 0%,rgba(126,178,61,.12),transparent 34%),#05080d}
+.header{background:rgba(5,8,13,.92);border-bottom:1px solid rgba(182,255,69,.15);backdrop-filter:blur(18px)}
+.panel,.news-card,.mini-ad{background:linear-gradient(145deg,rgba(15,23,33,.97),rgba(8,13,20,.97));border-color:rgba(255,255,255,.075)}
+.hero-card{border-radius:24px;overflow:hidden;box-shadow:0 28px 70px rgba(0,0,0,.32)}
+.hero-content h1 em{color:var(--cinema-lime);font-style:normal}
+.hero-kicker{color:var(--cinema-lime);letter-spacing:2px}
+.hero-buttons .btn-primary{color:#10170a;background:var(--cinema-lime);border-color:var(--cinema-lime)}
+.main-nav a.selected,.main-nav a:hover{color:var(--cinema-lime)}
+.fixture-tabs .tab.active,.favorites-filter[aria-pressed=true]{color:#10170a;background:var(--cinema-lime)}
+@media(max-width:720px){.hero-card{border-radius:18px}.hero-content{padding-inline:20px}.hero-content h1{font-size:clamp(32px,9vw,43px)}}
+
+/* Stadium photography layer */
+.hero-card{background-image:linear-gradient(90deg,rgba(3,8,13,.98) 0%,rgba(3,8,13,.88) 40%,rgba(3,8,13,.34) 76%,rgba(3,8,13,.2) 100%),linear-gradient(0deg,rgba(3,8,13,.65),transparent 58%),url("https://images.unsplash.com/photo-1522778119026-d647f0596c20?auto=format&fit=crop&w=1800&q=85");background-size:cover;background-position:center 45%}
+.hero-card::after{color:rgba(224,255,244,.08);-webkit-text-stroke-color:rgba(182,255,69,.2)}
+.hero-card h1 em{color:#b6ff45}
+@media(max-width:760px){.hero-card{background-position:58% center}.hero-card::before{background:linear-gradient(0deg,rgba(3,8,13,.96),rgba(3,8,13,.42) 65%,rgba(3,8,13,.12))}}
