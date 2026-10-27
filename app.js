@@ -8,8 +8,8 @@ function toggleFavorite(id){const key=String(id);state.favoriteIds=isFavorite(ke
 const cairoDateKey=d=>{const p=new Intl.DateTimeFormat("en-GB",{timeZone:"Africa/Cairo",year:"numeric",month:"2-digit",day:"2-digit"}).formatToParts(d);const v=Object.fromEntries(p.filter(x=>x.type!=="literal").map(x=>[x.type,x.value]));return `${v.year}-${v.month}-${v.day}`};
 function dateFromCairoKey(key){const [y,m,day]=key.split("-").map(Number);return new Date(Date.UTC(y,m-1,day,12))}
 function shiftCairoDate(date,days){const d=dateFromCairoKey(fmtDate(date));d.setUTCDate(d.getUTCDate()+days);return d}
-function scorePair(m){const score=m?.score||{};for(const p of [score.fullTime,score.regularTime,score.extraTime])if(p&&Number.isFinite(p.home)&&Number.isFinite(p.away))return {home:p.home,away:p.away};return null}
-function scoreText(m){const pair=scorePair(m);return pair?`${pair.home} - ${pair.away}`:"—"}
+function scorePair(m){const score=m?.score||{},valid=p=>p&&Number.isFinite(p.home)&&Number.isFinite(p.away);if(m?.status==="PENALTY_SHOOTOUT"&&valid(score.penalties))return score.penalties;for(const p of [score.fullTime,score.extraTime,score.regularTime])if(valid(p))return p;return null}
+function scoreText(m){const score=m?.score||{},pair=scorePair(m);if(!pair)return"—";const penalties=score.penalties;if(m?.status!=="PENALTY_SHOOTOUT"&&["FINISHED","AWARDED"].includes(m?.status)&&penalties&&Number.isFinite(penalties.home)&&Number.isFinite(penalties.away))return `${pair.home} - ${pair.away} (${penalties.home} - ${penalties.away} ر.ت)`;return `${pair.home} - ${pair.away}` }
 const fmtDate=d=>cairoDateKey(d);
 function labelDate(d){const key=fmtDate(d),today=fmtDate(new Date());if(key===today)return"اليوم";if(key===fmtDate(shiftCairoDate(new Date(),-1)))return"أمس";if(key===fmtDate(shiftCairoDate(new Date(),1)))return"غدًا";return new Intl.DateTimeFormat("ar-EG",{day:"numeric",month:"short",timeZone:"Africa/Cairo"}).format(dateFromCairoKey(key))}
 function time(iso){if(!iso)return"غير محدد";return new Intl.DateTimeFormat("ar-EG",{hour:"2-digit",minute:"2-digit",hour12:true,timeZone:"Africa/Cairo"}).format(new Date(iso))}
