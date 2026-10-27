@@ -4,16 +4,15 @@
 
 ## المتطلبات
 - حساب Cloudflare Pages.
-- رمز API من https://www.football-data.org/client/register
+- رمز API من football-data.org.
 - راجع خطة مزود البيانات الحالية لمعرفة البطولات وحدود الاستخدام.
 
 ## النشر
-1. فك ضغط الملف.
-2. ارفع الملفات إلى مستودع GitHub.
-3. في Cloudflare: Workers & Pages → Create application → Pages → Connect to Git.
-4. اختر المستودع. اترك Build command فارغًا، واجعل Build output directory `.`.
-5. بعد النشر، افتح إعدادات المشروع ثم Variables and Secrets، وأضف Secret باسم `FOOTBALL_DATA_TOKEN` وقيمة مفتاح API.
-6. أعد النشر وافتح رابط Pages. اختبر `/api/matches?date=YYYY-MM-DD` من الموقع.
+1. ارفع الملفات إلى مستودع GitHub.
+2. في Cloudflare: Workers & Pages → Create application → Pages → Connect to Git.
+3. اختر المستودع. اترك Build command فارغًا، واجعل Build output directory `.`.
+4. بعد النشر، افتح إعدادات المشروع ثم Variables and Secrets، وأضف Secret باسم `FOOTBALL_API_TOKEN` وقيمة مفتاح API.
+5. أعد النشر وافتح رابط Pages. اختبر `/api/matches?date=YYYY-MM-DD` من الموقع.
 
 ## ملاحظات
 - فتح index.html محليًا مباشرة لن يعمل مع API لأن المسار `/api/matches` يُنفذ بواسطة Cloudflare Pages Function.
