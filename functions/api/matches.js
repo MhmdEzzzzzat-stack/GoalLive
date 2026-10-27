@@ -20,10 +20,12 @@ const token=env.FOOTBALL_API_TOKEN;
       const message=r.status===429?"تم تجاوز حد الطلبات المجانية. حاول لاحقًا.":r.status===403?"المفتاح غير صالح أو البطولة غير متاحة في خطتك.":"تعذر جلب البيانات من المزوّد.";
       return json({error:message,providerStatus:r.status},r.status===429?429:502,r.status===429?{"Retry-After":"300","Cache-Control":"no-store"}:{});
     }
-    const matches=(data.matches||[]).filter(m=>new Intl.DateTimeFormat("en-CA",{timeZone:"Africa/Cairo",year:"numeric",month:"2-digit",day:"2-digit"}).format(new Date(m.utcDate))===date);
+    const matches=(data.matches||[]).filter(m=>m.utcDate&&cairoDateKey(new Date(m.utcDate))===date);
     const response = json({date,matches,count:matches.length,updatedAt:new Date().toISOString()},200,{"Cache-Control":"public, max-age=20, s-maxage=90, stale-while-revalidate=180"});
     try { await edgeCache.put(cacheKey, response.clone()); } catch {}
     return response;
   }catch{return json({error:"تعذر الاتصال بمصدر المباريات."},502)}
 }
 function json(data,status=200,extra={}){return new Response(JSON.stringify(data),{status,headers:{"Content-Type":"application/json; charset=utf-8","Cache-Control":"no-store",...extra}})}
+
+function cairoDateKey(date){const parts=new Intl.DateTimeFormat("en-GB",{timeZone:"Africa/Cairo",year:"numeric",month:"2-digit",day:"2-digit"}).formatToParts(date);const values=Object.fromEntries(parts.filter(p=>p.type!=="literal").map(p=>[p.type,p.value]));return `${values.year}-${values.month}-${values.day}`}
