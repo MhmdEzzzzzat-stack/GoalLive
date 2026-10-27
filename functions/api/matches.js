@@ -11,10 +11,10 @@ const token=env.FOOTBALL_API_TOKEN;
     const data=await r.json().catch(()=>({}));
     if(!r.ok){
       const message=r.status===429?"تم تجاوز حد الطلبات المجانية. حاول لاحقًا.":r.status===403?"المفتاح غير صالح أو البطولة غير متاحة في خطتك.":"تعذر جلب البيانات من المزوّد.";
-      return json({error:message,providerStatus:r.status},r.status===429?429:502);
+      return json({error:message,providerStatus:r.status},r.status===429?429:502,r.status===429?{"Retry-After":"300","Cache-Control":"no-store"}:{});
     }
     const matches=(data.matches||[]).filter(m=>new Intl.DateTimeFormat("en-CA",{timeZone:"Africa/Cairo",year:"numeric",month:"2-digit",day:"2-digit"}).format(new Date(m.utcDate))===date);
-    return json({date,matches,count:matches.length,updatedAt:new Date().toISOString()},200,{"Cache-Control":"public, max-age=20, s-maxage=20"});
+    return json({date,matches,count:matches.length,updatedAt:new Date().toISOString()},200,{"Cache-Control":"public, max-age=30, s-maxage=120, stale-while-revalidate=300"});
   }catch{return json({error:"تعذر الاتصال بمصدر المباريات."},502)}
 }
 function json(data,status=200,extra={}){return new Response(JSON.stringify(data),{status,headers:{"Content-Type":"application/json; charset=utf-8","Cache-Control":"no-store",...extra}})}
