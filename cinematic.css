@@ -131,3 +131,134 @@ a:focus-visible, button:focus-visible, input:focus-visible {
     transition-duration: .01ms !important;
   }
 }
+
+
+/* High-impact cinematic pass: make the new art direction unmistakable */
+html { background: #030913; }
+body {
+  background:
+    radial-gradient(ellipse at 50% -12%, rgba(26, 102, 93, .30), transparent 48%),
+    radial-gradient(ellipse at 95% 35%, rgba(25, 91, 143, .14), transparent 28%),
+    #030913;
+}
+.topline {
+  background: linear-gradient(90deg, #04100f, #071522 48%, #04100f);
+  border-bottom-color: rgba(69,255,173,.18);
+  letter-spacing: .15px;
+}
+.header {
+  max-width: none;
+  padding-inline: max(28px, calc((100vw - 1544px) / 2));
+  background: rgba(3, 10, 20, .92);
+  border-bottom: 1px solid rgba(69,255,173,.2);
+}
+.logo { letter-spacing: -.6px; }
+.logo-ball {
+  background: linear-gradient(145deg, #123c39, #0a1c2b 72%);
+  border-radius: 15px;
+}
+.main-nav a.selected::after {
+  height: 3px;
+  box-shadow: 0 0 15px rgba(69,255,173,.6);
+}
+.layout { gap: 20px; }
+.panel {
+  border-radius: 17px;
+  backdrop-filter: blur(12px);
+  overflow: hidden;
+}
+.panel-title { padding: 20px 20px 15px; }
+.panel-title h2, .section-head h2 { letter-spacing: -.35px; }
+.hero-card {
+  min-height: 360px;
+  padding: 36px 32px;
+  border-radius: 21px;
+  border-color: rgba(69,255,173,.34);
+  background:
+    radial-gradient(ellipse at 77% 50%, rgba(25, 120, 91, .20), transparent 38%),
+    linear-gradient(115deg, #061422 0%, #082a2b 54%, #061322 100%);
+  box-shadow: 0 28px 75px rgba(0,0,0,.32), inset 0 1px 0 rgba(255,255,255,.06);
+}
+.hero-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: .55;
+  background: radial-gradient(ellipse at 78% 55%, transparent 0 18%, rgba(69,255,173,.045) 18.2% 18.5%, transparent 18.7% 28%, rgba(69,255,173,.035) 28.2% 28.5%, transparent 28.7%);
+}
+.hero-content { max-width: 61%; }
+.hero-tag {
+  border-radius: 999px;
+  padding: 7px 12px;
+  background: rgba(69,255,173,.08);
+  border-color: rgba(69,255,173,.22);
+}
+.hero-card h1 { font-size: clamp(36px, 4vw, 54px); line-height: 1.2; margin-top: 18px; }
+.hero-content > p { font-size: 13px; line-height: 2; }
+.btn-primary, .btn-ghost { border-radius: 11px; padding: 12px 16px; font-size: 11px; }
+.btn-primary { color: #03130c; background: linear-gradient(135deg, #65ffc0, #27e58d); }
+.hero-art { width: 50%; left: -1%; }
+.pitch { width: 255px; height: 136px; }
+.hero-football { font-size: 104px; }
+.hero-footnote { color: #8aa7b9; }
+.league-row, .table-link, .broadcaster, .upcoming-item { transition: background .2s ease, padding .2s ease; }
+.league-row:hover, .table-link:hover, .broadcaster:hover, .upcoming-item:hover {
+  background: rgba(69,255,173,.045);
+}
+.league-badge, .table-crest, .club-symbol {
+  border: 1px solid rgba(116,157,185,.12);
+  background: linear-gradient(145deg, #163047, #0b1c2d);
+}
+.match-tools { padding-inline: 17px; }
+.match-search-wrap {
+  border-radius: 10px !important;
+  border-color: rgba(102,145,174,.25) !important;
+  background: rgba(3,13,24,.7) !important;
+}
+.fixture-tabs { scrollbar-width: thin; scrollbar-color: #275443 transparent; }
+.tab { border-radius: 9px; }
+.tab.active { background: rgba(37,229,138,.13); border-color: rgba(69,255,173,.25); }
+.match-card {
+  border-radius: 13px;
+  padding: 14px 15px;
+  background: linear-gradient(115deg, rgba(12,31,49,.98), rgba(5,17,30,.98));
+}
+.match-body { padding-block: 15px; }
+.team { font-size: 12px; }
+.team-crest, .crest-placeholder { width: 32px; height: 32px; }
+.score { font-size: 21px; }
+.match-status.live { box-shadow: 0 0 18px rgba(255,86,103,.1); }
+.live-badge { border: 1px solid rgba(255,86,103,.15); }
+.news-card {
+  border-radius: 15px;
+  border: 1px solid rgba(91,133,164,.22);
+  background: linear-gradient(145deg, rgba(12,31,50,.96), rgba(5,17,31,.97));
+  overflow: hidden;
+}
+.news-art { min-height: 150px; }
+.footer {
+  border-top: 1px solid rgba(69,255,173,.13);
+  background: rgba(3,10,19,.65);
+}
+:where(a, button, input) { -webkit-tap-highlight-color: transparent; }
+@media (min-width: 1200px) {
+  .layout { padding-top: 30px; }
+  .center-column { gap: 22px; }
+}
+@media (max-width: 1000px) {
+  .hero-card { min-height: 320px; }
+  .hero-content { max-width: 66%; }
+}
+@media (max-width: 760px) {
+  .header { padding-inline: 16px; }
+  .layout { padding: 16px 14px 30px; gap: 14px; }
+  .hero-card { min-height: 290px; padding: 25px 20px; border-radius: 17px; }
+  .hero-content { max-width: 88%; }
+  .hero-card h1 { font-size: clamp(32px, 8vw, 42px); }
+  .hero-art { left: -12%; width: 58%; opacity: .23; }
+  .hero-footnote { right: 17px; bottom: 10px; font-size: 8px; }
+  .panel-title { padding: 17px 16px 12px; }
+  .match-card { padding: 12px; }
+}
