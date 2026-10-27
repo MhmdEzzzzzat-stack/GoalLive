@@ -955,3 +955,18 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(-
   .match-actions .watch-match-btn { flex: 1 1 100%; }
   .match-actions .official-link { flex: 1; text-align: center; }
 }
+
+
+/* Faster path to official streaming platforms */
+.watch-secondary-btn {
+ display:inline-flex;align-items:center;justify-content:center;
+ padding:8px 10px;border:1px solid #3b5367;border-radius:8px;
+ background:#182737;color:#e4edf5!important;font-size:10px;font-weight:800;
+ white-space:nowrap;transition:background .18s,border-color .18s,transform .18s;
+}
+.watch-secondary-btn:hover {background:#20384b;border-color:#65849d;transform:translateY(-1px)}
+.match-actions {gap:7px}
+.match-actions .official-link {font-size:9px}
+@media(max-width:520px) {
+ .match-actions .watch-match-btn,.match-actions .watch-secondary-btn {flex:1 1 100%}
+}
