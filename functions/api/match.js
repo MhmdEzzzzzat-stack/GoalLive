@@ -8,13 +8,12 @@ export async function onRequestGet({ request, env }) {
 
   const url = new URL(request.url);
   const id = url.searchParams.get("id");
-  if (!id || !/^\\d{1,12}$/.test(id)) {
+  // Match IDs from football-data.org are numeric. Keep this regex as \d in JS.
+  if (!id || !/^\d{1,12}$/.test(id)) {
     return json({ error: "رقم المباراة غير صالح." }, 400);
   }
 
   try {
-    // Deep-data unfold headers are documented for the matches list resource.
-    // Filter that list to one match so the provider can return lineups/events.
     const providerUrl = new URL("https://api.football-data.org/v4/matches");
     providerUrl.searchParams.set("ids", id);
     const response = await fetch(providerUrl.toString(), {
@@ -61,24 +60,20 @@ export async function onRequestGet({ request, env }) {
     const eventsCount = ["goals", "bookings", "substitutions"].reduce((total, key) =>
       total + (Array.isArray(match[key]) ? match[key].length : 0), 0);
 
-    return json(
-      {
-        match,
-        diagnostics: {
-          lineupsAvailable: homeLineups > 0 || awayLineups > 0,
-          homeLineupCount: homeLineups,
-          awayLineupCount: awayLineups,
-          eventsAvailable: eventsCount > 0,
-          eventsCount,
-          note: homeLineups || eventsCount
-            ? null
-            : "المزوّد لم يُرجع بيانات التشكيلات أو الأحداث. قد تكون الخطة أو تغطية هذه المباراة لا تتضمنها."
-        },
-        updatedAt: new Date().toISOString()
+    return json({
+      match,
+      diagnostics: {
+        lineupsAvailable: homeLineups > 0 || awayLineups > 0,
+        homeLineupCount: homeLineups,
+        awayLineupCount: awayLineups,
+        eventsAvailable: eventsCount > 0,
+        eventsCount,
+        note: homeLineups || eventsCount
+          ? null
+          : "المزوّد لم يُرجع بيانات التشكيلات أو الأحداث. قد تكون الخطة أو تغطية هذه المباراة لا تتضمنها."
       },
-      200,
-      { "Cache-Control": "public, max-age=30, s-maxage=30" }
-    );
+      updatedAt: new Date().toISOString()
+    }, 200, { "Cache-Control": "public, max-age=30, s-maxage=30" });
   } catch {
     return json({ error: "تعذر الاتصال بمصدر تفاصيل المباراة." }, 502);
   }
