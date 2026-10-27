@@ -8,12 +8,16 @@ export async function onRequestGet({ request, env }) {
 
   const url = new URL(request.url);
   const id = url.searchParams.get("id");
-  if (!id || !/^\d{1,12}$/.test(id)) {
+  if (!id || !/^\\d{1,12}$/.test(id)) {
     return json({ error: "رقم المباراة غير صالح." }, 400);
   }
 
   try {
-    const response = await fetch(`https://api.football-data.org/v4/matches/${id}`, {
+    // Deep-data unfold headers are documented for the matches list resource.
+    // Filter that list to one match so the provider can return lineups/events.
+    const providerUrl = new URL("https://api.football-data.org/v4/matches");
+    providerUrl.searchParams.set("ids", id);
+    const response = await fetch(providerUrl.toString(), {
       headers: {
         "X-Auth-Token": token,
         "Accept": "application/json",
@@ -26,24 +30,52 @@ export async function onRequestGet({ request, env }) {
 
     const data = await response.json().catch(() => ({}));
     if (!response.ok) {
-      const message = response.status === 404
+      const providerStatus = response.status;
+      const message = providerStatus === 404
         ? "لم يتم العثور على المباراة."
-        : response.status === 429
-          ? "تم تجاوز حد الطلبات. حاول مرة أخرى لاحقًا."
-          : response.status === 403
-            ? "التفاصيل غير متاحة بالمفتاح أو الخطة الحالية."
-            : "تعذر جلب تفاصيل المباراة من المزوّد.";
-      const status = response.status === 404 ? 404 : response.status === 429 ? 429 : response.status === 403 ? 403 : 502;
-      return json({ error: message, providerStatus: response.status }, status);
+        : providerStatus === 429
+          ? "تم تجاوز حد الطلبات. انتظر قليلًا ثم حاول مرة أخرى."
+          : providerStatus === 403
+            ? "المزوّد رفض الطلب. تحقق من صلاحية المفتاح والخطة وتغطية البطولة."
+            : providerStatus === 400
+              ? "رفض المزوّد معرّف المباراة أو صيغة الطلب."
+              : "تعذر جلب تفاصيل المباراة من المزوّد.";
+      const status = providerStatus === 404 ? 404
+        : providerStatus === 429 ? 429
+          : providerStatus === 403 ? 403
+            : providerStatus === 400 ? 400 : 502;
+      const headers = providerStatus === 429 ? { "Retry-After": "300" } : {};
+      return json({ error: message, providerStatus }, status, headers);
     }
 
-    const match = data.match || data;
-    if (!match || !match.id) {
-      return json({ error: "استجابة تفاصيل المباراة غير مكتملة." }, 502);
+    const match = (data.matches || []).find(item => String(item.id) === id);
+    if (!match) {
+      return json({
+        error: "لم يُرجع المزوّد بيانات لهذه المباراة.",
+        providerStatus: response.status
+      }, 404);
     }
+
+    const homeLineups = Array.isArray(match.homeTeam?.lineup) ? match.homeTeam.lineup.length : 0;
+    const awayLineups = Array.isArray(match.awayTeam?.lineup) ? match.awayTeam.lineup.length : 0;
+    const eventsCount = ["goals", "bookings", "substitutions"].reduce((total, key) =>
+      total + (Array.isArray(match[key]) ? match[key].length : 0), 0);
 
     return json(
-      { match, updatedAt: new Date().toISOString() },
+      {
+        match,
+        diagnostics: {
+          lineupsAvailable: homeLineups > 0 || awayLineups > 0,
+          homeLineupCount: homeLineups,
+          awayLineupCount: awayLineups,
+          eventsAvailable: eventsCount > 0,
+          eventsCount,
+          note: homeLineups || eventsCount
+            ? null
+            : "المزوّد لم يُرجع بيانات التشكيلات أو الأحداث. قد تكون الخطة أو تغطية هذه المباراة لا تتضمنها."
+        },
+        updatedAt: new Date().toISOString()
+      },
       200,
       { "Cache-Control": "public, max-age=30, s-maxage=30" }
     );
