@@ -1,4 +1,4 @@
-const state={date:new Date(),filter:"all",matches:[],loading:false,lastUpdated:null};
+const state={date:new Date(),filter:"all",matches:[],loading:false,lastUpdated:null,apiCooldownUntil:0};
 const $=s=>document.querySelector(s);
 const list=$("#matches-list"),statusEl=$("#status-message"),empty=$("#empty-state");
 const fmtDate=d=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
@@ -59,18 +59,33 @@ function render(){
 }
 function setLoading(on){state.loading=on;const refresh=$("#refresh-btn");if(refresh)refresh.disabled=on;statusEl.className=`status-message${on?" loading":""}`;if(on)statusEl.textContent="جارٍ تحديث مركز المباريات…"}
 async function load({quiet=false}={}){
- if(state.loading)return;setLoading(true);
- if(!quiet){statusEl.textContent="جارٍ تحميل مباريات اليوم…"}
+ if(state.loading)return;
+ if(Date.now()<state.apiCooldownUntil){
+  if(!quiet)statusEl.textContent=`تم إيقاف التحديث مؤقتًا لتجنب تجاوز حد الطلبات. جرّب بعد ${Math.ceil((state.apiCooldownUntil-Date.now())/60000)} دقائق.`;
+  return;
+ }
+ setLoading(true);
+ if(!quiet){statusEl.className="status-message loading";statusEl.textContent="جارٍ تحميل مباريات اليوم…"}
  try{
-  const res=await fetch(`/api/matches?date=${encodeURIComponent(fmtDate(state.date))}`,{headers:{Accept:"application/json"},cache:"no-store"});
-  const data=await res.json().catch(()=>({}));if(!res.ok)throw new Error(data.error||"تعذر تحميل البيانات");
+  const res=await fetch(`/api/matches?date=${encodeURIComponent(fmtDate(state.date))}`,{headers:{Accept:"application/json"}});
+  const data=await res.json().catch(()=>({}));
+  if(res.status===429){
+   const retrySeconds=Math.max(300,Number(res.headers.get("Retry-After"))||300);
+   state.apiCooldownUntil=Date.now()+retrySeconds*1000;
+   throw new Error("وصل مصدر البيانات إلى حد الطلبات. أوقفنا المحاولات مؤقتًا لتجنب استهلاك الحد أكثر");
+  }
+  if(!res.ok)throw new Error(data.error||"تعذر تحميل البيانات");
+  state.apiCooldownUntil=0;
   state.matches=Array.isArray(data.matches)?data.matches:[];state.lastUpdated=new Date();
   statusEl.className="status-message";
   statusEl.textContent=state.matches.length?`تم تحميل ${state.matches.length} مباراة • آخر تحديث ${time(state.lastUpdated.toISOString())}`:"لا توجد مباريات في مصدر البيانات لهذا اليوم، أو أن البطولة غير متاحة في خطتك.";
   const updated=$("#updated-at");if(updated)updated.textContent=`آخر تحديث ${time(state.lastUpdated.toISOString())}`;
   const today=$("#today-btn");if(today)today.textContent=labelDate(state.date);render();
- }catch(e){statusEl.className="status-message error";statusEl.textContent=`${e.message}. تأكد من إعداد مفتاح API ونشر الموقع على Cloudflare Pages.`;if(!state.matches.length)empty.hidden=false;renderLiveStrip()}
- finally{state.loading=false;const refresh=$("#refresh-btn");if(refresh)refresh.disabled=false}
+ }catch(e){
+  statusEl.className="status-message error";
+  statusEl.textContent=e.message.includes("حد الطلبات")?`${e.message}. سيُستأنف التحديث بعد انتهاء فترة الانتظار.`:`${e.message}. راجع إعداد مفتاح API ونشر Cloudflare Pages.`;
+  if(!state.matches.length)empty.hidden=false;renderLiveStrip()
+ }finally{state.loading=false;const refresh=$("#refresh-btn");if(refresh)refresh.disabled=false}
 }
 
 function injectPhaseTwoStyle(){if($("#phase-two-style"))return;const s=document.createElement("style");s.id="phase-two-style";s.textContent=`
@@ -106,4 +121,4 @@ $("#year")&&($("#year").textContent=new Date().getFullYear());
 $("#theme-toggle")?.addEventListener("click",()=>{document.body.classList.toggle("light");localStorage.setItem("goallive-theme",document.body.classList.contains("light")?"light":"dark")});
 if(localStorage.getItem("goallive-theme")==="light")document.body.classList.add("light");
 $("#mobile-menu")?.addEventListener("click",()=>document.querySelector(".main-nav")?.classList.toggle("nav-open"));
-injectPhaseOneStyle();addPhaseOneElements();load();setInterval(()=>{if(fmtDate(state.date)===fmtDate(new Date()))load({quiet:true})},60000);
+injectPhaseOneStyle();addPhaseOneElements();load();setInterval(()=>{if(document.visibilityState==="visible"&&fmtDate(state.date)===fmtDate(new Date())&&Date.now()>=state.apiCooldownUntil)load({quiet:true})},120000);
