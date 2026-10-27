@@ -580,3 +580,97 @@ button{cursor:pointer}
   .hero-card::before{animation:none}
   *,*::before,*::after{scroll-behavior:auto!important;transition:none!important}
 }
+
+
+/* GoalLive visual polish v2 — cinematic hero, clearer hierarchy, responsive finishing */
+:root{
+  --gl-ink:#080b10;
+  --gl-panel:#10151c;
+  --gl-line:rgba(255,255,255,.09);
+  --gl-muted:#9ca8b2;
+  --gl-lime:#b8ff3b;
+}
+body{
+  background-image:
+    radial-gradient(ellipse at 82% 8%,rgba(184,255,59,.055),transparent 28%),
+    radial-gradient(ellipse at 12% 38%,rgba(30,110,130,.07),transparent 32%),
+    linear-gradient(180deg,#080b10 0%,#07090d 60%,#090d12 100%);
+}
+.header{border-bottom:1px solid rgba(255,255,255,.055)}
+.logo{transition:transform .2s ease}
+.logo:hover{transform:translateY(-1px)}
+.main-nav a{transition:color .18s ease,background .18s ease}
+.main-nav a:hover{color:var(--gl-lime)}
+.hero-card{
+  isolation:isolate;
+  overflow:hidden;
+  background-image:
+    linear-gradient(270deg,rgba(5,8,12,.97) 0%,rgba(5,8,12,.87) 28%,rgba(5,8,12,.43) 56%,rgba(5,8,12,.10) 100%),
+    linear-gradient(0deg,rgba(5,8,12,.74) 0%,transparent 48%),
+    url("https://wallpapers.com/images/hd/cr7-ronaldo-back-dibc9onjmkdaf0be.jpg");
+  background-position:center,center,left center;
+  background-size:cover,cover,auto 125%;
+  background-repeat:no-repeat;
+}
+.hero-card::after{pointer-events:none}
+.hero-bg-glow{pointer-events:none}
+.hero-content{position:relative}
+.hero-card h1{max-width:620px;text-wrap:balance}
+.hero-card h1 em{color:var(--gl-lime);font-style:normal;text-shadow:0 0 34px rgba(184,255,59,.13)}
+.hero-content>p{max-width:390px}
+.hero-live-card{
+  background:linear-gradient(145deg,rgba(16,22,29,.84),rgba(8,12,17,.72));
+  border-color:rgba(255,255,255,.16);
+}
+.hero-live-card a{transition:gap .18s ease,color .18s ease}
+.hero-live-card a:hover{color:var(--gl-lime)}
+.panel,.news-card,.mini-ad{
+  background-color:rgba(14,18,24,.88);
+  backdrop-filter:blur(12px);
+}
+.panel-title{border-bottom:1px solid rgba(255,255,255,.035)}
+.league-row,.upcoming-item,.broadcaster,.table-link{
+  transition:background .18s ease,border-color .18s ease,transform .18s ease;
+}
+.league-row:hover,.upcoming-item:hover,.broadcaster:hover,.table-link:hover{
+  background:rgba(255,255,255,.035);
+}
+.league-pills a:focus-visible,.btn-primary:focus-visible,.btn-ghost:focus-visible,
+.main-nav a:focus-visible,.league-row:focus-visible{
+  outline:2px solid var(--gl-lime);
+  outline-offset:3px;
+}
+.match-card{background:linear-gradient(145deg,rgba(19,25,33,.98),rgba(12,16,22,.98))}
+.match-card:focus-within{border-color:rgba(184,255,59,.4)}
+.tab[aria-selected="true"],.tab.active,.favorites-filter.active{
+  box-shadow:0 4px 16px rgba(184,255,59,.09);
+}
+.section-head{gap:12px}
+.footer{border-top:1px solid rgba(255,255,255,.07);color:#8f9aa4}
+@media(min-width:1121px){
+  .layout{align-items:start}
+  .left-column,.right-column{position:relative}
+  .hero-card{min-height:clamp(430px,36vw,510px)}
+}
+@media(max-width:1120px){
+  .hero-card{background-size:cover,cover,auto 115%;background-position:center,center,left center}
+}
+@media(max-width:760px){
+  .hero-card{
+    background-image:
+      linear-gradient(0deg,rgba(5,8,12,.98) 0%,rgba(5,8,12,.87) 39%,rgba(5,8,12,.35) 70%,rgba(5,8,12,.12) 100%),
+      linear-gradient(90deg,rgba(5,8,12,.2),rgba(5,8,12,.05)),
+      url("https://wallpapers.com/images/hd/cr7-ronaldo-back-dibc9onjmkdaf0be.jpg");
+    background-size:cover,cover,auto 108%;
+    background-position:center,center,left top;
+  }
+  .hero-content{padding-top:230px}
+  .hero-live-card{max-width:46%}
+  .panel,.news-card,.mini-ad{border-radius:16px}
+  .match-card:hover,.news-card:hover{transform:none}
+}
+@media(max-width:390px){
+  .hero-card{background-size:cover,cover,auto 92%;background-position:center,center,left top}
+  .hero-content{padding-top:210px}
+  .hero-live-card{font-size:11px;padding:10px}
+}
