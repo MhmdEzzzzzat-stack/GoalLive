@@ -1,6 +1,10 @@
-const state={date:new Date(),filter:"all",matches:[],loading:false,lastUpdated:null,apiCooldownUntil:0};
+const state={date:new Date(),filter:"all",matches:[],loading:false,lastUpdated:null,apiCooldownUntil:0,favoritesOnly:false,favoriteIds:[],search:""};
 const $=s=>document.querySelector(s);
 const list=$("#matches-list"),statusEl=$("#status-message"),empty=$("#empty-state");
+try{state.favoriteIds=JSON.parse(localStorage.getItem("goallive-favorites")||"[]").map(String)}catch{state.favoriteIds=[]}
+function isFavorite(id){return state.favoriteIds.includes(String(id))}
+function saveFavorites(){try{localStorage.setItem("goallive-favorites",JSON.stringify(state.favoriteIds))}catch{}const count=$("#favorites-count");if(count)count.textContent=String(state.favoriteIds.length)}
+function toggleFavorite(id){const key=String(id);state.favoriteIds=isFavorite(key)?state.favoriteIds.filter(x=>x!==key):[...state.favoriteIds,key];saveFavorites();render()}
 const fmtDate=d=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
 function labelDate(d){const now=new Date();const yesterday=new Date(now);yesterday.setDate(now.getDate()-1);const tomorrow=new Date(now);tomorrow.setDate(now.getDate()+1);const key=fmtDate(d);if(key===fmtDate(now))return"اليوم";if(key===fmtDate(yesterday))return"أمس";if(key===fmtDate(tomorrow))return"غدًا";return new Intl.DateTimeFormat("ar-EG",{day:"numeric",month:"short"}).format(d)}
 function time(iso){if(!iso)return"غير محدد";return new Intl.DateTimeFormat("ar-EG",{hour:"2-digit",minute:"2-digit",hour12:true,timeZone:"Africa/Cairo"}).format(new Date(iso))}
@@ -39,23 +43,31 @@ function addPhaseOneElements(){if($("#phase-live-strip"))return;const hero=$(".h
 function renderLiveStrip(){const live=state.matches.filter(m=>status(m).group==="live");const strip=$("#phase-live-strip");if(strip){strip.classList.toggle("has-live",live.length>0);strip.querySelector(".count").textContent=`${live.length} مباشر`;strip.title=live.length?"اضغط للانتقال إلى المباريات":"لا توجد مباريات مباشرة في البيانات الحالية";strip.onclick=()=>{if(live.length)document.querySelector("#matches")?.scrollIntoView({behavior:"smooth",block:"start"})}}}
 function renderDateBanner(){const label=$("#phase-date-label"),full=$("#phase-date-full"),count=$("#phase-match-count");if(label)label.textContent=labelDate(state.date);if(full)full.textContent=` • ${fullDate(state.date)}`;if(count)count.textContent=`${state.matches.length} ${state.matches.length===1?"مباراة":"مباريات"}`}
 function render(){
- const shown=state.matches.filter(m=>state.filter==="all"||status(m).group===state.filter);
+ const query=state.search.trim().toLocaleLowerCase();
+ const shown=state.matches.filter(m=>{
+  const matchesStatus=state.filter==="all"||status(m).group===state.filter;
+  const matchesFavorite=!state.favoritesOnly||isFavorite(m.id);
+  const searchable=[m.homeTeam?.name,m.awayTeam?.name,m.competition?.name].filter(Boolean).join(" ").toLocaleLowerCase();
+  return matchesStatus&&matchesFavorite&&(!query||searchable.includes(query));
+ });
  list.innerHTML="";empty.hidden=shown.length>0;
  shown.forEach(m=>{
   const st=status(m),h=m.homeTeam||{},a=m.awayTeam||{},hs=m.score?.fullTime?.home??m.score?.regularTime?.home,as=m.score?.fullTime?.away??m.score?.regularTime?.away;
   const scored=hs!==null&&hs!==undefined&&as!==null&&as!==undefined;
   const card=document.createElement("article");card.className=`match-card${st.group==="live"?" is-live":""}`;card.tabIndex=0;card.setAttribute("role","button");card.setAttribute("aria-label",`تفاصيل مباراة ${h.name||"الفريق الأول"} ضد ${a.name||"الفريق الثاني"}`);card.dataset.matchId=m.id;
   const scoreLabel=st.group==="live"?"مباشر":scored?"النتيجة":"بتوقيت مصر";
-  card.innerHTML=`<div class="match-top"><span class="competition"><i class="comp-dot"></i><span>${esc(m.competition?.name||"بطولة")}</span></span><span class="match-status ${st.kind}">${esc(st.text)}</span></div>
+  card.innerHTML=`<div class="match-top"><span class="competition"><i class="comp-dot"></i><span>${esc(m.competition?.name||"بطولة")}</span></span><span class="match-top-actions"><button class="favorite-match${isFavorite(m.id)?" is-favorite":""}" type="button" aria-label="${isFavorite(m.id)?"إزالة من المفضلة":"إضافة للمفضلة"}" aria-pressed="${isFavorite(m.id)}" title="${isFavorite(m.id)?"إزالة من المفضلة":"إضافة للمفضلة"}">${isFavorite(m.id)?"★":"☆"}</button><span class="match-status ${st.kind}">${esc(st.text)}</span></span></div>
   <div class="match-body"><div class="team">${h.crest?`<img class="team-crest" src="${esc(h.crest)}" alt="${esc(h.name||"")}" loading="lazy" referrerpolicy="no-referrer">`:'<span class="crest-placeholder">⚽</span>'}<span class="team-name">${esc(h.name||"الفريق الأول")}</span></div>
   <div class="score">${scored?`${hs} - ${as}`:"—"}<small>${scoreLabel}</small></div>
   <div class="team">${a.crest?`<img class="team-crest" src="${esc(a.crest)}" alt="${esc(a.name||"")}" loading="lazy" referrerpolicy="no-referrer">`:'<span class="crest-placeholder">⚽</span>'}<span class="team-name">${esc(a.name||"الفريق الثاني")}</span></div></div>
   <div class="match-bottom"><span class="match-time">${st.group==="live"?`الحالة: ${esc(st.text)}`:scored?`موعد المباراة: ${time(m.utcDate)}`:`البداية: ${time(m.utcDate)}`}</span><a class="official-link" href="${officialUrl(m)}" target="_blank" rel="noopener noreferrer">معلومات رسمية ↗</a></div>`;
-  card.addEventListener("click",e=>{if(e.target.closest("a"))return;if(m.id!=null)openMatchDetail(m.id)});card.addEventListener("keydown",e=>{if((e.key==="Enter"||e.key===" ")&&m.id!=null){e.preventDefault();openMatchDetail(m.id)}});list.appendChild(card);
+  card.querySelector(".favorite-match")?.addEventListener("click",e=>{e.stopPropagation();toggleFavorite(m.id)});
+  card.addEventListener("click",e=>{if(e.target.closest("a,button"))return;if(m.id!=null)openMatchDetail(m.id)});card.addEventListener("keydown",e=>{if((e.key==="Enter"||e.key===" ")&&m.id!=null){e.preventDefault();openMatchDetail(m.id)}});list.appendChild(card);
  });
  const live=state.matches.filter(m=>status(m).group==="live");
  $("#live-summary").innerHTML=live.length?live.slice(0,3).map(m=>`<div class="live-match"><div class="live-comp">${esc(m.competition?.name||"مباراة مباشرة")}</div><div class="live-teams"><div class="live-team">${esc(m.homeTeam?.name||"الفريق الأول")}</div><div class="live-score">${m.score?.fullTime?.home??0} - ${m.score?.fullTime?.away??0}<small>مباشر</small></div><div class="live-team">${esc(m.awayTeam?.name||"الفريق الثاني")}</div></div></div>`).join(""):'<div class="live-placeholder">⚽<span>لا توجد مباراة مباشرة<br>في البيانات المتاحة حاليًا.</span></div>';
- renderLiveStrip();renderDateBanner();
+ const favFilter=$("#favorites-filter");if(favFilter){favFilter.classList.toggle("active",state.favoritesOnly);favFilter.setAttribute("aria-pressed",String(state.favoritesOnly))}
+ saveFavorites();renderLiveStrip();renderDateBanner();
 }
 function setLoading(on){state.loading=on;const refresh=$("#refresh-btn");if(refresh)refresh.disabled=on;statusEl.className=`status-message${on?" loading":""}`;if(on)statusEl.textContent="جارٍ تحديث مركز المباريات…"}
 async function load({quiet=false}={}){
@@ -117,6 +129,8 @@ $("#prev-day")?.addEventListener("click",()=>{state.date.setDate(state.date.getD
 $("#next-day")?.addEventListener("click",()=>{state.date.setDate(state.date.getDate()+1);load()});
 $("#today-btn")?.addEventListener("click",()=>{state.date=new Date();load()});
 $("#refresh-btn")?.addEventListener("click",()=>load());
+$("#match-search")?.addEventListener("input",e=>{state.search=e.target.value;render()});
+$("#favorites-filter")?.addEventListener("click",()=>{state.favoritesOnly=!state.favoritesOnly;render()});
 $("#year")&&($("#year").textContent=new Date().getFullYear());
 $("#theme-toggle")?.addEventListener("click",()=>{document.body.classList.toggle("light");localStorage.setItem("goallive-theme",document.body.classList.contains("light")?"light":"dark")});
 if(localStorage.getItem("goallive-theme")==="light")document.body.classList.add("light");
