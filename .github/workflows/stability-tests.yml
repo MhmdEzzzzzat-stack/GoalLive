@@ -1,0 +1,21 @@
+name: Stability regression tests
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+      - "test/**"
+
+jobs:
+  stability-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Run stability regression tests
+        run: node --test tests/stability.test.mjs
