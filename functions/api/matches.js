@@ -1,5 +1,5 @@
 export async function onRequestGet({request,env}) {
-const token=env.FOOTBALL_API_TOKEN;
+const token=typeof env?.FOOTBALL_API_TOKEN==="string"?env.FOOTBALL_API_TOKEN.trim():"";
   if(!token)return json({error:"مفتاح البيانات غير مضبوط. أضف FOOTBALL_API_TOKEN في إعدادات Cloudflare Pages."},503);
   const url=new URL(request.url),date=url.searchParams.get("date");
   if(!date||!/^\d{4}-\d{2}-\d{2}$/.test(date))return json({error:"تاريخ غير صالح."},400);
