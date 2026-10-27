@@ -884,3 +884,74 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(-
 @media(prefers-reduced-motion:reduce){
  *,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
 }
+
+
+/* Match watch CTA + clearer contrast pass */
+:root { --watch-green: #b8ff3b; }
+.panel, .news-card, .match-card, .league-row, .table-link, .broadcaster {
+  background-color: #101720;
+}
+.panel {
+  background: linear-gradient(145deg, #111923 0%, #0b1119 100%);
+  border-color: #2a3541;
+}
+.panel-description, .news-copy p, .hero-content > p { color: #d5dce2; }
+.league-row, .table-link, .broadcaster {
+  background: linear-gradient(100deg, #121b25, #0d141d);
+  border-color: #293541;
+}
+.match-card {
+  background: linear-gradient(110deg, #142131 0%, #0d1723 100%);
+  border-color: #354555;
+}
+.match-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.watch-match-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 8px 11px;
+  border: 1px solid rgba(184,255,59,.7);
+  border-radius: 8px;
+  background: linear-gradient(135deg, #c6ff63, #a6ef26);
+  color: #10170a !important;
+  font-size: 10px;
+  line-height: 1.4;
+  font-weight: 900;
+  white-space: nowrap;
+  box-shadow: 0 4px 16px rgba(184,255,59,.12);
+  transition: transform .18s ease, box-shadow .18s ease, filter .18s ease;
+}
+.watch-match-btn:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.06);
+  box-shadow: 0 8px 22px rgba(184,255,59,.2);
+}
+.watch-match-btn:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
+.match-bottom { gap: 9px; flex-wrap: wrap; }
+.match-bottom .match-time { color: #c5d0da; }
+.official-link { color: #d0dce6; }
+.hero-card.hero-cinematic { background-color: #101820; }
+.hero-card.hero-cinematic:before {
+  background:
+    linear-gradient(90deg, rgba(3,7,11,.94) 0%, rgba(3,7,11,.74) 42%, rgba(3,7,11,.16) 100%),
+    linear-gradient(0deg, rgba(3,7,11,.55), transparent 72%);
+}
+.hero-live-card { display: none !important; }
+#phase-live-strip { display: none !important; }
+#phase-date-banner {
+  background: linear-gradient(100deg, #162431, #101a25);
+  border-color: #354654;
+}
+.live-panel, .table-panel, .watch-panel { background: linear-gradient(145deg, #111a24, #0b121a); }
+@media (max-width: 520px) {
+  .match-actions { width: 100%; justify-content: stretch; }
+  .match-actions .watch-match-btn { flex: 1 1 100%; }
+  .match-actions .official-link { flex: 1; text-align: center; }
+}
