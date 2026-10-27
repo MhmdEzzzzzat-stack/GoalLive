@@ -72,16 +72,21 @@ function render(){
  saveFavorites();renderLiveStrip();renderDateBanner();
 }
 function setLoading(on){state.loading=on;const refresh=$("#refresh-btn");if(refresh)refresh.disabled=on;statusEl.className=`status-message${on?" loading":""}`;if(on)statusEl.textContent="جارٍ تحديث مركز المباريات…"}
+let activeMatchesController=null,activeMatchesDate="";
 async function load({quiet=false}={}){
- if(state.loading)return;
+ const requestedDate=fmtDate(state.date);
+ if(state.loading&&activeMatchesDate===requestedDate)return;
  if(Date.now()<state.apiCooldownUntil){
   if(!quiet)statusEl.textContent=`تم إيقاف التحديث مؤقتًا لتجنب تجاوز حد الطلبات. جرّب بعد ${Math.ceil((state.apiCooldownUntil-Date.now())/60000)} دقائق.`;
   return;
  }
+ if(activeMatchesController)activeMatchesController.abort();
+ const controller=new AbortController();activeMatchesController=controller;activeMatchesDate=requestedDate;
+ const timeout=setTimeout(()=>controller.abort(),12000);
  setLoading(true);
- if(!quiet){statusEl.className="status-message loading";statusEl.textContent="جارٍ تحميل مباريات اليوم…"}
+ if(!quiet){statusEl.className="status-message loading";statusEl.textContent="جارٍ تحميل مباريات "+labelDate(state.date)+"…"}
  try{
-  const res=await fetch(`/api/matches?date=${encodeURIComponent(fmtDate(state.date))}`,{headers:{Accept:"application/json"}});
+  const res=await fetch(`/api/matches?date=${encodeURIComponent(requestedDate)}`,{headers:{Accept:"application/json"},signal:controller.signal,cache:"no-store"});
   const data=await res.json().catch(()=>({}));
   if(res.status===429){
    const retrySeconds=Math.max(300,Number(res.headers.get("Retry-After"))||300);
@@ -89,19 +94,26 @@ async function load({quiet=false}={}){
    throw new Error("وصل مصدر البيانات إلى حد الطلبات. أوقفنا المحاولات مؤقتًا لتجنب استهلاك الحد أكثر");
   }
   if(!res.ok)throw new Error(data.error||"تعذر تحميل البيانات");
-  state.apiCooldownUntil=0;
-  state.matches=Array.isArray(data.matches)?data.matches:[];state.lastUpdated=new Date();
+  if(controller!==activeMatchesController||requestedDate!==fmtDate(state.date))return;
+  state.apiCooldownUntil=0;state.matches=Array.isArray(data.matches)?data.matches:[];state.lastUpdated=new Date();
   statusEl.className="status-message";
   statusEl.textContent=state.matches.length?`تم تحميل ${state.matches.length} مباراة • آخر تحديث ${time(state.lastUpdated.toISOString())}`:"لا توجد مباريات في مصدر البيانات لهذا اليوم، أو أن البطولة غير متاحة في خطتك.";
   const updated=$("#updated-at");if(updated)updated.textContent=`آخر تحديث ${time(state.lastUpdated.toISOString())}`;
   const today=$("#today-btn");if(today)today.textContent=labelDate(state.date);render();
  }catch(e){
-  statusEl.className="status-message error";
-  statusEl.textContent=e.message.includes("حد الطلبات")?`${e.message}. سيُستأنف التحديث بعد انتهاء فترة الانتظار.`:`${e.message}. راجع إعداد مفتاح API ونشر Cloudflare Pages.`;
+  if(controller!==activeMatchesController)return;
+  if(e.name==="AbortError"){
+   statusEl.className="status-message error";statusEl.textContent="استغرق تحميل المباريات وقتًا طويلًا. جرّب تحديث البيانات مرة أخرى.";
+  }else{
+   statusEl.className="status-message error";
+   statusEl.textContent=e.message.includes("حد الطلبات")?`${e.message}. سيُستأنف التحديث بعد انتهاء فترة الانتظار.`:`${e.message}. راجع إعداد مفتاح API ونشر Cloudflare Pages.`;
+  }
   if(!state.matches.length)empty.hidden=false;renderLiveStrip()
- }finally{state.loading=false;const refresh=$("#refresh-btn");if(refresh)refresh.disabled=false}
+ }finally{
+  clearTimeout(timeout);
+  if(controller===activeMatchesController){state.loading=false;activeMatchesController=null;activeMatchesDate="";const refresh=$("#refresh-btn");if(refresh)refresh.disabled=false}
+ }
 }
-
 function injectPhaseTwoStyle(){if($("#phase-two-style"))return;const s=document.createElement("style");s.id="phase-two-style";s.textContent=`
 .match-card{cursor:pointer}.match-card:focus-visible{outline:2px solid var(--green);outline-offset:3px}
 .match-detail-backdrop[hidden]{display:none!important}.match-detail-backdrop{position:fixed;inset:0;z-index:1000;background:rgba(2,9,17,.82);backdrop-filter:blur(8px);display:grid;place-items:center;padding:16px;overflow-y:auto}
