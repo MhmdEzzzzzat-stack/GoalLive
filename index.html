@@ -56,6 +56,7 @@
 
       <section class="panel fixtures-panel" id="matches">
         <div class="panel-title fixture-heading"><div><span class="mini-label">لا تفوّت اللحظة</span><h2>مباريات اليوم</h2></div><div class="date-picker"><button id="prev-day" aria-label="اليوم السابق">›</button><button id="today-btn">اليوم</button><button id="next-day" aria-label="اليوم التالي">‹</button></div></div>
+        <div class="match-tools"><label class="match-search-wrap" for="match-search"><span>⌕</span><input id="match-search" type="search" placeholder="ابحث عن فريق أو بطولة..." autocomplete="off"></label><button id="favorites-filter" class="favorites-filter" type="button" aria-pressed="false">☆ المفضلة <span id="favorites-count">0</span></button></div>
         <div class="fixture-tabs"><button class="tab active" data-filter="all">كل المباريات</button><button class="tab" data-filter="live">مباشر <span class="tiny-pulse"></span></button><button class="tab" data-filter="scheduled">قادمة</button><button class="tab" data-filter="finished">انتهت</button><button id="refresh-btn" class="refresh-btn">↻ تحديث</button></div>
         <div id="status-message" class="status-message" role="status">جارٍ تحميل المباريات…</div>
         <div id="matches-list" class="matches-list"></div>
