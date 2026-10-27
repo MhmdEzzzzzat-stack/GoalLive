@@ -75,7 +75,7 @@ async function load({quiet=false}={}){
 
 function injectPhaseTwoStyle(){if($("#phase-two-style"))return;const s=document.createElement("style");s.id="phase-two-style";s.textContent=`
 .match-card{cursor:pointer}.match-card:focus-visible{outline:2px solid var(--green);outline-offset:3px}
-.match-detail-backdrop{position:fixed;inset:0;z-index:1000;background:rgba(2,9,17,.82);backdrop-filter:blur(8px);display:grid;place-items:center;padding:16px;overflow-y:auto}
+.match-detail-backdrop[hidden]{display:none!important}.match-detail-backdrop{position:fixed;inset:0;z-index:1000;background:rgba(2,9,17,.82);backdrop-filter:blur(8px);display:grid;place-items:center;padding:16px;overflow-y:auto}
 .match-detail-dialog{position:relative;width:min(760px,100%);max-height:min(88vh,900px);overflow:auto;background:linear-gradient(145deg,#0d2236,#071522);border:1px solid rgba(95,145,178,.28);border-radius:20px;box-shadow:0 30px 100px rgba(0,0,0,.5);color:#eaf2fa}
 .match-detail-head{position:sticky;top:0;z-index:2;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px 18px;background:rgba(8,24,39,.96);border-bottom:1px solid rgba(255,255,255,.07)}
 .match-detail-head h2{font-size:15px;margin:0}.match-detail-close{width:36px;height:36px;border:1px solid #294157;border-radius:10px;background:#102b40;color:#fff;font-size:22px;cursor:pointer}
