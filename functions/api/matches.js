@@ -2,12 +2,14 @@ export async function onRequestGet({request,env}) {
 const token=env.FOOTBALL_API_TOKEN;
   if(!token)return json({error:"مفتاح البيانات غير مضبوط. أضف FOOTBALL_API_TOKEN في إعدادات Cloudflare Pages."},503);
   const url=new URL(request.url),date=url.searchParams.get("date");
-  // Brief edge cache prevents repeated visitors from hitting the upstream football API.
-  const cacheKey = new Request(`${url.origin}/api/matches-cache?date=${encodeURIComponent(date||"")}`);
+  if(!date||!/^\d{4}-\d{2}-\d{2}$/.test(date))return json({error:"تاريخ غير صالح."},400);
+  const parsedDate=new Date(date+"T00:00:00Z");
+  if(Number.isNaN(parsedDate.getTime())||parsedDate.toISOString().slice(0,10)!==date)return json({error:"تاريخ غير صالح."},400);
+  // Keep existing cache windows until the deployed provider plan and quota are verified.
+  const cacheKey = new Request(url.origin+"/api/matches-cache?date="+encodeURIComponent(date));
   const edgeCache = caches.default;
   try { const cachedResponse = await edgeCache.match(cacheKey); if (cachedResponse) return cachedResponse; } catch {}
 
-  if(!date||!/^\d{4}-\d{2}-\d{2}$/.test(date))return json({error:"تاريخ غير صالح."},400);
   const center=new Date(`${date}T12:00:00Z`),from=new Date(center),to=new Date(center);
   from.setUTCDate(from.getUTCDate()-1);to.setUTCDate(to.getUTCDate()+1);
   const api=`https://api.football-data.org/v4/matches?dateFrom=${from.toISOString().slice(0,10)}&dateTo=${to.toISOString().slice(0,10)}`;
