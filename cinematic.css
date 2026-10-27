@@ -1,0 +1,133 @@
+/* GoalLive cinematic finishing layer — visual-only overrides */
+:root {
+  --cinema-lime: #45ffad;
+  --cinema-glass: rgba(8, 23, 39, .82);
+}
+body {
+  background:
+    radial-gradient(ellipse at 50% 0%, rgba(28, 92, 111, .24), transparent 42%),
+    radial-gradient(ellipse at 0% 42%, rgba(37, 229, 138, .055), transparent 35%),
+    var(--bg);
+}
+.header {
+  background: rgba(4, 13, 25, .88);
+  border-bottom-color: rgba(69, 255, 173, .16);
+  box-shadow: 0 10px 35px rgba(0, 0, 0, .16);
+}
+.logo-ball {
+  border-color: rgba(69, 255, 173, .35);
+  box-shadow: inset 0 0 22px rgba(37, 229, 138, .12), 0 0 22px rgba(37, 229, 138, .08);
+}
+.panel {
+  background: linear-gradient(145deg, rgba(12, 31, 50, .96), rgba(5, 17, 31, .97));
+  border-color: rgba(91, 133, 164, .24);
+  box-shadow: 0 16px 42px rgba(0, 0, 0, .18), inset 0 1px 0 rgba(255,255,255,.025);
+  transition: border-color .22s ease, box-shadow .22s ease, transform .22s ease;
+}
+.panel:hover {
+  border-color: rgba(69, 255, 173, .24);
+  box-shadow: 0 18px 46px rgba(0, 0, 0, .22), 0 0 24px rgba(37, 229, 138, .035);
+}
+.hero-card {
+  isolation: isolate;
+  min-height: 320px;
+  border-color: rgba(69, 255, 173, .28);
+  background:
+    linear-gradient(105deg, rgba(4, 19, 32, .98) 0%, rgba(7, 38, 43, .93) 52%, rgba(5, 18, 33, .98) 100%);
+  box-shadow: 0 24px 65px rgba(0,0,0,.24), inset 0 1px 0 rgba(255,255,255,.045);
+}
+.hero-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: .72;
+  background:
+    linear-gradient(115deg, transparent 0 30%, rgba(69,255,173,.045) 50%, transparent 72%),
+    repeating-linear-gradient(0deg, transparent 0 31px, rgba(173, 222, 238, .025) 32px);
+}
+.hero-bg-glow {
+  background: rgba(37, 229, 138, .16);
+  filter: blur(22px);
+}
+.hero-tag {
+  box-shadow: inset 0 0 18px rgba(37,229,138,.04), 0 0 24px rgba(37,229,138,.04);
+}
+.hero-card h1 em {
+  text-shadow: 0 0 28px rgba(37, 229, 138, .17);
+}
+.hero-art {
+  opacity: .88;
+  filter: drop-shadow(0 0 28px rgba(37, 229, 138, .08));
+}
+.stadium-ring {
+  box-shadow: 0 0 28px rgba(37, 229, 138, .045);
+}
+.pitch {
+  border-color: rgba(69,255,173,.72);
+  box-shadow: 0 0 48px rgba(37,229,138,.13), inset 0 0 25px rgba(37,229,138,.09);
+}
+.hero-football {
+  filter: drop-shadow(0 16px 24px rgba(0,0,0,.65)) drop-shadow(0 0 18px rgba(37,229,138,.12));
+}
+.btn-primary {
+  box-shadow: 0 8px 25px rgba(37,229,138,.16), inset 0 1px 0 rgba(255,255,255,.18);
+  transition: transform .2s ease, box-shadow .2s ease, background .2s ease;
+}
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 30px rgba(37,229,138,.24);
+}
+.btn-ghost, .round-btn, .date-picker button, .refresh-btn, .favorites-filter {
+  transition: border-color .2s ease, background .2s ease, color .2s ease, transform .2s ease;
+}
+.btn-ghost:hover, .round-btn:hover, .date-picker button:hover, .refresh-btn:hover, .favorites-filter:hover {
+  border-color: rgba(69,255,173,.48);
+  color: var(--cinema-lime);
+}
+.match-card {
+  background: linear-gradient(110deg, rgba(12, 32, 51, .98), rgba(6, 21, 36, .98));
+  border-color: rgba(74, 111, 142, .28);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.018);
+}
+.match-card:hover {
+  border-color: rgba(69,255,173,.46);
+  box-shadow: 0 8px 24px rgba(0,0,0,.16), 0 0 22px rgba(37,229,138,.045);
+  transform: translateY(-2px);
+}
+.team-crest {
+  filter: drop-shadow(0 2px 5px rgba(0,0,0,.18));
+}
+.tab.active {
+  box-shadow: inset 0 0 16px rgba(37,229,138,.07);
+}
+.live-badge {
+  box-shadow: inset 0 0 16px rgba(255,86,103,.055);
+}
+.news-card {
+  transition: transform .22s ease, border-color .22s ease, box-shadow .22s ease;
+}
+.news-card:hover {
+  transform: translateY(-3px);
+  border-color: rgba(69,255,173,.28);
+  box-shadow: 0 16px 34px rgba(0,0,0,.18);
+}
+a:focus-visible, button:focus-visible, input:focus-visible {
+  outline: 2px solid var(--cinema-lime);
+  outline-offset: 3px;
+}
+@media (max-width: 760px) {
+  .hero-card { min-height: 300px; }
+  .hero-card::before { opacity: .42; }
+  .hero-art { opacity: .34; }
+  .hero-content { max-width: 78%; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    scroll-behavior: auto !important;
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+  }
+}
