@@ -393,3 +393,33 @@ body{background:radial-gradient(ellipse at 70% 0%,rgba(126,178,61,.12),transpare
 .hero-card::after{color:rgba(224,255,244,.08);-webkit-text-stroke-color:rgba(182,255,69,.2)}
 .hero-card h1 em{color:#b6ff45}
 @media(max-width:760px){.hero-card{background-position:58% center}.hero-card::before{background:linear-gradient(0deg,rgba(3,8,13,.96),rgba(3,8,13,.42) 65%,rgba(3,8,13,.12))}}
+
+/* Reference layout pass: dark editorial football dashboard */
+:root{--cinema-lime:#b8ff3b}
+body{background:#07090d;color:#f5f7f8}
+.topline{background:#090c11;color:#8d9aa6}
+.header{background:rgba(7,10,14,.94);border-bottom:1px solid #1d252c}
+.layout{max-width:1540px;grid-template-columns:minmax(210px,.78fr) minmax(440px,1.75fr) minmax(220px,.82fr);gap:18px}
+.hero-card.hero-cinematic{min-height:420px;padding:0;border-radius:22px;background:#10151a;position:relative;isolation:isolate;overflow:hidden}
+.hero-card.hero-cinematic:before{content:"";position:absolute;inset:0;z-index:0;background:linear-gradient(90deg,rgba(4,7,10,.97) 0%,rgba(4,7,10,.78) 43%,rgba(4,7,10,.18) 100%),linear-gradient(0deg,rgba(4,7,10,.76),transparent 62%)}
+.hero-photo{position:absolute;inset:0;z-index:-1;background-image:url("https://images.unsplash.com/photo-1522778119026-d647f0596c20?auto=format&fit=crop&w=1800&q=85");background-size:cover;background-position:center 45%;filter:brightness(.8) saturate(.8)}
+.hero-content{max-width:66%;padding:54px 34px 58px;position:relative;z-index:3}
+.hero-tag{color:#e2e9df;border-color:#b8ff3b55;background:#090d0dbd}
+.hero-kicker{color:#b8ff3b;letter-spacing:2px}
+.hero-card h1{font-size:clamp(36px,4vw,58px);line-height:1.2}
+.hero-card h1 em{color:#b8ff3b}
+.hero-content>p{color:#d0d4d6;max-width:390px}
+.hero-buttons .btn-primary{background:#b8ff3b;border-color:#b8ff3b;color:#10150b;border-radius:9px}
+.hero-buttons .btn-ghost{border-radius:9px;background:#0a0e12a8;border-color:#ffffff38}
+.hero-art{display:none!important}
+.hero-card:after{color:#ffffff0b;-webkit-text-stroke:1px #b8ff3b18}
+.hero-live-card{position:absolute;z-index:4;top:20px;left:20px;width:195px;padding:16px;display:flex;flex-direction:column;gap:9px;border:1px solid #ffffff22;border-radius:15px;background:#080d12d9;backdrop-filter:blur(14px)}
+.hero-live-card b{font-size:15px}.hero-live-card small{color:#b3bdc4;line-height:1.7}.hero-live-card a{color:#b8ff3b;font-size:12px;font-weight:800}
+.panel,.news-card,.mini-ad{background:#0d1117;border:1px solid #202832;border-radius:16px;box-shadow:none}
+.panel-title h2,.section-head h2{color:#f5f7f8}
+.league-row,.table-link,.broadcaster{border-color:#202832}
+.fixture-tabs .tab.active,.favorites-filter[aria-pressed=true]{background:#b8ff3b;color:#10150b}
+.tiny-pulse,.live-badge i{background:#b8ff3b}
+.main-nav a.selected,.main-nav a:hover,.text-link{color:#b8ff3b}
+@media(max-width:1100px){.layout{grid-template-columns:minmax(180px,.7fr) minmax(380px,1.5fr)}.right-column{grid-column:1/-1;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}.hero-card.hero-cinematic{min-height:390px}}
+@media(max-width:760px){.layout{display:flex;flex-direction:column}.hero-card.hero-cinematic{min-height:480px}.hero-card.hero-cinematic:before{background:linear-gradient(0deg,rgba(4,7,10,.98) 0%,rgba(4,7,10,.7) 48%,rgba(4,7,10,.12) 100%)}.hero-content{max-width:100%;padding:225px 20px 34px}.hero-live-card{top:14px;left:14px;width:175px;padding:12px}.hero-card h1{font-size:clamp(34px,9vw,46px)}.right-column{display:flex}.hero-footnote{font-size:9px;padding-inline:18px}}
