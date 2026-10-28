@@ -49,3 +49,15 @@ button{font:inherit}
 @media(max-width:760px){html{scroll-padding-top:76px}.header{min-height:62px}.main-nav.nav-open{z-index:70;box-shadow:0 18px 35px rgba(0,0,0,.32)}.hero-card.hero-cinematic{min-height:365px;border-radius:18px}.hero-card.hero-cinematic .hero-content{padding:24px 19px}.hero-card h1{font-size:clamp(30px,8vw,43px)}.hero-card .hero-kicker{font-size:10px;letter-spacing:.09em}.hero-buttons{gap:8px;flex-wrap:wrap}.hero-buttons a{flex:1 1 auto;justify-content:center}.fixture-heading{align-items:flex-start;flex-direction:column}.date-picker{width:100%;justify-content:space-between}.date-choice{flex:1}.match-tools{gap:8px}.match-search-wrap{min-width:0}.news-grid{gap:12px}#goallive-back-top{left:12px;bottom:12px;width:42px;height:42px}}
 @media(max-width:420px){.topline{font-size:10px;gap:5px}.hero-card.hero-cinematic{min-height:350px}.hero-card.hero-cinematic .hero-content{padding:20px 15px}.hero-tag{font-size:9px}.hero-buttons a{font-size:12px;padding-inline:10px}.date-calendar{min-width:40px}.fixture-tabs{overflow-x:auto;scrollbar-width:thin}.fixture-tabs .tab,.fixture-tabs .refresh-btn{flex-shrink:0}.panel{border-radius:15px}.match-card{padding-inline:10px}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*:before,*:after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}
+
+/* Sports portal navigation layer — GoalLive identity */
+.sports-shortcuts{position:relative;z-index:20;background:linear-gradient(90deg,rgba(8,25,41,.98),rgba(9,35,52,.98));border-bottom:1px solid rgba(37,229,138,.17);box-shadow:0 8px 22px rgba(0,0,0,.12)}
+.sports-shortcuts-inner{max-width:1600px;min-height:48px;margin:auto;padding:0 28px;display:flex;align-items:center;gap:8px;overflow-x:auto;scrollbar-width:none}
+.sports-shortcuts-inner::-webkit-scrollbar{display:none}
+.sports-shortcuts a{display:inline-flex;align-items:center;gap:7px;flex-shrink:0;padding:7px 13px;border:1px solid transparent;border-radius:9px;color:#c1d0de;font-size:12px;font-weight:700;transition:background .18s,border-color .18s,color .18s}
+.sports-shortcuts a:hover,.sports-shortcuts a:focus-visible{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.08);color:#fff}
+.sports-shortcuts a.shortcut-current{background:rgba(37,229,138,.12);border-color:rgba(37,229,138,.22);color:#6ff0b1}
+.shortcuts-label{display:inline-flex;align-items:center;gap:8px;flex-shrink:0;margin-left:8px;padding-left:15px;border-left:1px solid rgba(255,255,255,.1);color:#f3f7fb;font-size:12px;font-weight:900}
+.shortcuts-label i,.shortcut-live-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 0 4px rgba(37,229,138,.1)}
+.shortcut-live-dot{width:6px;height:6px;box-shadow:none}
+@media(max-width:760px){.sports-shortcuts-inner{padding:0 12px;min-height:44px;gap:4px}.sports-shortcuts a{font-size:11px;padding:6px 10px}.shortcuts-label{font-size:11px;margin-left:3px;padding-left:10px}}
