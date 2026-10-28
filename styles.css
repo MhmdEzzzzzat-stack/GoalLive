@@ -137,3 +137,10 @@ body.light .date-calendar{background:#fff;border-color:#d7e2ed;color:#087c4b}
 .competition-crest{width:17px;height:17px;object-fit:contain;flex:none}
 @media(max-width:620px){.date-picker{gap:2px;padding:4px;max-width:100%;justify-content:space-between}.date-picker .date-step{min-width:28px;width:28px;height:34px}.date-picker .date-choice{height:34px;min-width:0;padding-inline:7px;font-size:10px}.date-calendar{width:34px;height:34px}.fixture-heading{gap:10px}.team-crest,.crest-placeholder{width:28px;height:28px;flex-basis:28px;border-radius:8px}}
 @media(max-width:390px){.fixture-heading{align-items:flex-start!important;flex-direction:column}.date-picker{width:100%}.date-picker .date-choice{flex:1}.date-picker .date-step{flex:0 0 28px}}
+
+
+/* Keep home/away teams aligned with the provider's home-away score order in RTL layouts */
+.match-body{direction:ltr}
+.match-body>.team:first-child{direction:ltr;justify-content:flex-start;text-align:left}
+.match-body>.team:last-child{direction:rtl;justify-content:flex-start;text-align:right}
+.match-body .team-name{direction:rtl;unicode-bidi:plaintext}
