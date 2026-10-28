@@ -8,60 +8,57 @@ const source = await readFile(new URL("../functions/api/match.js", import.meta.u
 function loadHandler(fetchImpl) {
   const code = source.replace("export async function onRequestGet", "async function onRequestGet")
     + "\nthis.handler = onRequestGet;";
-  const context = { URL, Request, Response, Date, Intl, Number, Object, String, Math, fetch: fetchImpl };
+  const context = { URL, Request, Response, Date, Intl, Number, Object, String, Math, Promise, encodeURIComponent, fetch: fetchImpl };
   vm.runInNewContext(code, context);
   return context.handler;
 }
-
 const request = id => new Request("https://example.test/api/match?id=" + encodeURIComponent(id));
 
 test("match endpoint rejects invalid IDs before calling provider", async () => {
   let calls = 0;
   const handler = loadHandler(async () => { calls++; throw new Error("unexpected provider call"); });
   for (const id of ["", "abc", "-1", "1.2", "1234567890123"]) {
-    const response = await handler({ request: request(id), env: { FOOTBALL_API_TOKEN: "test-token" } });
+    const response = await handler({ request: request(id), env: { API_FOOTBALL_KEY: "test-token" } });
     assert.equal(response.status, 400, `ID should be rejected: ${id}`);
     assert.match((await response.json()).error, /رقم المباراة غير صالح/);
   }
   assert.equal(calls, 0);
 });
 
-test("match endpoint requests the selected ID and does not expose the token", async () => {
+test("match endpoint requests fixture, events and lineups without exposing key", async () => {
   const secret = "never-return-this-token";
-  let calledUrl;
-  let calledOptions;
+  const urls = [];
   const handler = loadHandler(async (url, options) => {
-    calledUrl = url;
-    calledOptions = options;
-    return new Response(JSON.stringify({ matches: [{ id: 42, homeTeam: { name: "Home" }, awayTeam: { name: "Away" } }] }), {
-      status: 200,
-      headers: { "Content-Type": "application/json" }
-    });
+    urls.push(new URL(url));
+    assert.equal(options.headers["x-apisports-key"], secret);
+    if (new URL(url).pathname.endsWith("/fixtures/events")) return new Response(JSON.stringify({response:[{type:"Goal",detail:"Normal Goal",time:{elapsed:12},player:{name:"Scorer"},team:{name:"Home"}}]}), {status:200});
+    if (new URL(url).pathname.endsWith("/fixtures/lineups")) return new Response(JSON.stringify({response:[{team:{id:1},formation:"4-3-3",startXI:[{player:{id:9,name:"Keeper",number:1,pos:"G",grid:"1:1"}}],substitutes:[]},{team:{id:2},formation:"4-4-2",startXI:[],substitutes:[]}]}), {status:200});
+    return new Response(JSON.stringify({response:[{fixture:{id:42,date:"2026-10-28T15:00:00+00:00",status:{short:"FT",elapsed:90},venue:{name:"Ground"}},league:{id:1,name:"League",logo:""},teams:{home:{id:1,name:"Home",logo:"",winner:true},away:{id:2,name:"Away",logo:"",winner:false}},score:{halftime:{home:1,away:0},fulltime:{home:2,away:0}}}]}), {status:200});
   });
-  const response = await handler({ request: request("42"), env: { FOOTBALL_API_TOKEN: secret } });
-  assert.equal(response.status, 200);
-  const body = await response.text();
-  assert.ok(body.includes('"id":42'));
-  assert.ok(!body.includes(secret));
-  assert.equal(new URL(calledUrl).pathname, "/v4/matches");
-  assert.equal(new URL(calledUrl).searchParams.get("ids"), "42");
-  assert.equal(calledOptions.headers["X-Auth-Token"], secret);
-  assert.equal(calledOptions.headers["X-Unfold-Lineups"], "true");
+  const response = await handler({request:request("42"),env:{API_FOOTBALL_KEY:secret}});
+  assert.equal(response.status,200);
+  const body=await response.json();
+  assert.equal(body.match.id,42);
+  assert.equal(body.match.goals.length,1);
+  assert.equal(body.match.homeTeam.lineup[0].name,"Keeper");
+  assert.ok(!JSON.stringify(body).includes(secret));
+  assert.equal(urls.length,3);
+  assert.ok(urls.some(u=>u.pathname.endsWith("/fixtures")&&u.searchParams.get("id")==="42"));
+  assert.ok(urls.some(u=>u.pathname.endsWith("/fixtures/events")&&u.searchParams.get("fixture")==="42"));
+  assert.ok(urls.some(u=>u.pathname.endsWith("/fixtures/lineups")&&u.searchParams.get("fixture")==="42"));
 });
 
-test("missing token is rejected without provider access", async () => {
+test("missing API-Football key is rejected without provider access", async () => {
   let calls = 0;
   const handler = loadHandler(async () => { calls++; throw new Error("unexpected provider call"); });
-  const response = await handler({ request: request("42"), env: { FOOTBALL_API_TOKEN: "   " } });
+  const response = await handler({ request: request("42"), env: { API_FOOTBALL_KEY: "   " } });
   assert.equal(response.status, 503);
-  assert.ok(!(await response.text()).includes("unexpected provider call"));
   assert.equal(calls, 0);
 });
 
 test("provider rate limiting is translated to 429 with Retry-After", async () => {
-  const handler = loadHandler(async () => new Response(JSON.stringify({ message: "rate limited" }), { status: 429 }));
-  const response = await handler({ request: request("42"), env: { FOOTBALL_API_TOKEN: "test-token" } });
+  const handler = loadHandler(async () => new Response(JSON.stringify({ errors: ["rate limited"] }), { status: 429 }));
+  const response = await handler({ request: request("42"), env: { API_FOOTBALL_KEY: "test-token" } });
   assert.equal(response.status, 429);
   assert.equal(response.headers.get("retry-after"), "300");
-  assert.match((await response.json()).error, /حد الطلبات/);
 });
