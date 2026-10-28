@@ -11,9 +11,9 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="./styles.css?v=20261028-16">
-  <link rel="stylesheet" href="./cinematic.css?v=20261028-16">
-  <link rel="stylesheet" href="./polish.css?v=20261028-16">
+  <link rel="stylesheet" href="./styles.css?v=20261028-17">
+  <link rel="stylesheet" href="./cinematic.css?v=20261028-17">
+  <link rel="stylesheet" href="./polish.css?v=20261028-17">
 </head>
 <body>
   <div class="topline"><span class="pulse"></span> تغطية كرة القدم • توقيت القاهرة <span class="topline-sep">|</span> <span id="updated-at">جاهز للتحديث</span></div>
@@ -24,6 +24,18 @@
     </nav>
     <div class="header-actions"><button id="theme-toggle" class="round-btn" aria-label="تغيير المظهر">☼</button><button id="mobile-menu" class="round-btn mobile-only" aria-label="فتح القائمة">☰</button></div>
   </header>
+
+  <div class="sports-shortcuts" aria-label="اختصارات الموقع">
+    <div class="sports-shortcuts-inner">
+      <span class="shortcuts-label"><i></i> مركز الكرة</span>
+      <a class="shortcut-current" href="#matches">مباريات اليوم</a>
+      <a href="#matches" data-shortcut-filter="live">مباشر الآن <span class="shortcut-live-dot"></span></a>
+      <a href="#matches" data-shortcut-filter="scheduled">المباريات القادمة</a>
+      <a href="#leagues">البطولات</a>
+      <a href="#news">أخبار وتحليلات</a>
+      <a href="#watch">القنوات الرسمية</a>
+    </div>
+  </div>
 
   <main id="home" class="layout">
     <aside class="left-column">
@@ -120,7 +132,7 @@
     <div class="footer-links"><a href="#matches">المباريات</a><a href="#leagues">البطولات</a><a href="#watch">المشاهدة الرسمية</a><a href="mailto:hello@goallive.example">اتصل بنا</a></div>
     <small>© <span id="year"></span> GoalLive — جميع الحقوق محفوظة.</small>
   </footer>
-  <script src="./app.js?v=20261028-16" defer></script>
-  <script src="./polish.js?v=20261028-16" defer></script>
+  <script src="./app.js?v=20261028-17" defer></script>
+  <script src="./polish.js?v=20261028-17" defer></script>
 </body>
 </html>
