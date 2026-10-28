@@ -29,9 +29,9 @@ export async function onRequestGet({request,env}) {
       optionalJson(settled[1]),optionalJson(settled[2])
     ]);
 
-    if(!fixtureResponse.ok||Number(fixtureData?.errors?.length)>0) {
+    if(!fixtureResponse.ok||hasProviderErrors(fixtureData?.errors)) {
       const status=fixtureResponse.status===429?429:fixtureResponse.status===403?403:502;
-      return json({error:status===429?"تم تجاوز حد طلبات API-Football. حاول لاحقًا.":status===403?"مفتاح API-Football غير صالح أو لا يملك صلاحية الوصول.":"تعذر جلب تفاصيل المباراة من API-Football.",providerStatus:fixtureResponse.status},status,status===429?{"Retry-After":"300"}:{});
+      return json({error:status===429?"تم تجاوز حد طلبات API-Football. حاول لاحقًا.":status===403?"مفتاح API-Football غير صالح أو لا يملك صلاحية الوصول.":providerErrorMessage(fixtureData?.errors),providerStatus:fixtureResponse.status,details:fixtureData?.errors||undefined},status,status===429?{"Retry-After":"300"}:{});
     }
 
     const raw=Array.isArray(fixtureData.response)?fixtureData.response[0]:null;
@@ -85,6 +85,6 @@ function mapStatus(s) {
   if(["CANC","ABD","AWD","WO"].includes(s))return "CANCELLED";
   return "SCHEDULED";
 }
-function json(data,status=200,extra={}) {
+function hasProviderErrors(errors) {\n  if(errors==null)return false;\n  if(Array.isArray(errors))return errors.length>0;\n  if(typeof errors==="object")return Object.values(errors).some(v=>v!==null&&v!==undefined&&v!==""&&v!==false);\n  return Boolean(errors);\n}\nfunction providerErrorMessage(errors) {\n  const raw=typeof errors==="object"?Object.values(errors).filter(Boolean).join("، "):String(errors||"");\n  if(/plan|subscription|access|limit|free/i.test(raw))return "مصدر البيانات رفض طلب التفاصيل بسبب صلاحيات الخطة أو حدود الوصول؛ راجع صلاحيات API-Football.";\n  if(/token|key|authori/i.test(raw))return "مفتاح API-Football غير صالح أو غير مخوّل لهذا الطلب.";\n  return "تعذر جلب تفاصيل المباراة من API-Football."+(raw?" ("+raw+")":"");\n}\nfunction json(data,status=200,extra={}) {
   return new Response(JSON.stringify(data),{status,headers:{"Content-Type":"application/json; charset=utf-8","Cache-Control":"no-store",...extra}});
 }
