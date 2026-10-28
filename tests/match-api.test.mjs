@@ -43,8 +43,8 @@ test("match endpoint requests the selected ID and does not expose the token", as
   const body = await response.text();
   assert.ok(body.includes('"id":42'));
   assert.ok(!body.includes(secret));
-  assert.equal(new URL(calledUrl).pathname, "/v4/matches/42");
-  assert.equal(new URL(calledUrl).searchParams.has("ids"), false);
+  assert.equal(new URL(calledUrl).pathname, "/v4/matches");
+  assert.equal(new URL(calledUrl).searchParams.get("ids"), "42");
   assert.equal(calledOptions.headers["X-Auth-Token"], secret);
   assert.equal(calledOptions.headers["X-Unfold-Lineups"], "true");
 });
