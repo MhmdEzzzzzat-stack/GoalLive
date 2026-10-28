@@ -9,19 +9,29 @@ export async function onRequestGet({request,env}) {
   try {
     const fixtureUrl=new URL("https://v3.football.api-sports.io/fixtures");
     fixtureUrl.searchParams.set("id",id);
-    const [fixtureResponse,eventsResponse,lineupsResponse]=await Promise.all([
+    // Fixture data is essential; events and lineups are optional coverage and must not
+    // make the whole details dialog fail if either endpoint is temporarily unavailable.
+    const settled=await Promise.allSettled([
       fetch(fixtureUrl.toString(),{headers}),
       fetch("https://v3.football.api-sports.io/fixtures/events?fixture="+encodeURIComponent(id),{headers}),
       fetch("https://v3.football.api-sports.io/fixtures/lineups?fixture="+encodeURIComponent(id),{headers})
     ]);
-    const [fixtureData,eventsData,lineupsData]=await Promise.all([
-      fixtureResponse.json().catch(()=>({})),eventsResponse.json().catch(()=>({})),lineupsResponse.json().catch(()=>({}))
+    if(settled[0].status==="rejected") {
+      return json({error:"تعذر الاتصال بمصدر بيانات المباراة. حاول مرة أخرى بعد قليل."},502);
+    }
+    const fixtureResponse=settled[0].value;
+    const fixtureData=await fixtureResponse.json().catch(()=>({}));
+    const optionalJson=async result=>{
+      if(result.status!=="fulfilled"||!result.value.ok)return {response:[]};
+      return result.value.json().catch(()=>({response:[]}));
+    };
+    const [eventsData,lineupsData]=await Promise.all([
+      optionalJson(settled[1]),optionalJson(settled[2])
     ]);
 
-    const failed=[fixtureResponse,eventsResponse,lineupsResponse].find(r=>!r.ok);
-    if(failed) {
-      const status=failed.status===429?429:failed.status===403?403:502;
-      return json({error:status===429?"تم تجاوز حد طلبات API-Football. حاول لاحقًا.":status===403?"مفتاح API-Football غير صالح أو لا يملك صلاحية الوصول.":"تعذر جلب تفاصيل المباراة من API-Football.",providerStatus:failed.status},status,status===429?{"Retry-After":"300"}:{});
+    if(!fixtureResponse.ok||Number(fixtureData?.errors?.length)>0) {
+      const status=fixtureResponse.status===429?429:fixtureResponse.status===403?403:502;
+      return json({error:status===429?"تم تجاوز حد طلبات API-Football. حاول لاحقًا.":status===403?"مفتاح API-Football غير صالح أو لا يملك صلاحية الوصول.":"تعذر جلب تفاصيل المباراة من API-Football.",providerStatus:fixtureResponse.status},status,status===429?{"Retry-After":"300"}:{});
     }
 
     const raw=Array.isArray(fixtureData.response)?fixtureData.response[0]:null;
