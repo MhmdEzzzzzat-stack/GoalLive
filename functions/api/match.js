@@ -5,10 +5,22 @@ export async function onRequestGet({request,env}) {
   const url=new URL(request.url),id=url.searchParams.get("id");
   if(!id||!/^\d{1,12}$/.test(id))return json({error:"رقم المباراة غير صالح."},400);
 
+  // Share a short edge cache between visitors and enforce a site-wide cooldown
+  // after provider rate limits, rather than letting every click hit API-Football.
+  const edgeCache=typeof caches!=="undefined"?caches.default:null;
+  const cacheKey=new Request(url.origin+"/api/match-cache?id="+encodeURIComponent(id));
+  const cooldownKey=new Request(url.origin+"/api/match-provider-cooldown");
+  try {
+    if(edgeCache) {
+      const cooldown=await edgeCache.match(cooldownKey);
+      if(cooldown) return json({error:"مصدر بيانات المباريات وصل لحد الطلبات. انتظر دقيقة ثم جرّب مرة أخرى.",retryAfter:60},429,{"Retry-After":"60","Cache-Control":"no-store"});
+      const cached=await edgeCache.match(cacheKey);
+      if(cached) return new Response(cached.body,{status:cached.status,headers:cached.headers});
+    }
+  } catch {}
   const headers={"x-apisports-key":token};
   try {
-    // One provider request per detail view. Events and lineups were causing two
-    // additional API calls for every click and quickly exhausting per-minute quotas.
+    // One provider request per detail view. Events and lineups are intentionally omitted.
     const fixtureUrl=new URL("https://v3.football.api-sports.io/fixtures");
     fixtureUrl.searchParams.set("id",id);
     const fixtureResponse=await fetch(fixtureUrl.toString(),{headers});
@@ -16,7 +28,10 @@ export async function onRequestGet({request,env}) {
 
     if(!fixtureResponse.ok||hasProviderErrors(fixtureData?.errors)) {
       const status=fixtureResponse.status===429?429:fixtureResponse.status===403?403:502;
-      return json({error:status===429?"تم تجاوز حد طلبات API-Football. انتظر دقيقة قبل إعادة المحاولة.":status===403?"مفتاح API-Football غير صالح أو لا يملك صلاحية الوصول.":providerErrorMessage(fixtureData?.errors),providerStatus:fixtureResponse.status,details:fixtureData?.errors||undefined},status,status===429?{"Retry-After":"60","Cache-Control":"no-store"}:{});
+      if(status===429&&edgeCache) {
+        try { await edgeCache.put(cooldownKey,new Response("rate-limited",{headers:{"Cache-Control":"public, max-age=0, s-maxage=60"}})); } catch {}
+      }
+      return json({error:status===429?"مصدر بيانات المباريات وصل لحد الطلبات. أوقفنا طلبات التفاصيل لمدة دقيقة لتجنب تكرار الخطأ.":status===403?"مفتاح API-Football غير صالح أو لا يملك صلاحية الوصول.":providerErrorMessage(fixtureData?.errors),providerStatus:fixtureResponse.status,details:fixtureData?.errors||undefined},status,status===429?{"Retry-After":"60","Cache-Control":"no-store"}:{});
     }
 
     const raw=Array.isArray(fixtureData.response)?fixtureData.response[0]:null;
@@ -32,7 +47,9 @@ export async function onRequestGet({request,env}) {
     match.bookings=[];
     match.substitutions=[];
 
-    return json({match,diagnostics:{lineupsAvailable:false,homeLineupCount:0,awayLineupCount:0,eventsAvailable:false,eventsCount:0,coverageWarning:"تم عرض بيانات المباراة الأساسية لتقليل استهلاك حد API؛ تفاصيل الأحداث والتشكيلات غير محمّلة."},updatedAt:new Date().toISOString()},200,{"Cache-Control":"public, max-age=60, s-maxage=300"});
+    const payload=json({match,diagnostics:{lineupsAvailable:false,homeLineupCount:0,awayLineupCount:0,eventsAvailable:false,eventsCount:0,coverageWarning:"تم عرض بيانات المباراة الأساسية لتقليل استهلاك حد API؛ تفاصيل الأحداث والتشكيلات غير محمّلة."},updatedAt:new Date().toISOString()},200,{"Cache-Control":"public, max-age=0, s-maxage=300"});
+    if(edgeCache) { try { await edgeCache.put(cacheKey,payload.clone()); } catch {} }
+    return payload;
 
   } catch {
     return json({error:"تعذر الاتصال بـ API-Football."},502);
