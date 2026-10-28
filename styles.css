@@ -90,3 +90,21 @@ body{background:radial-gradient(ellipse at 50% 0%,#10334a 0,transparent 43%),lin
 
 /* Club and competition badges */
 .league-badge{position:relative;overflow:hidden;flex:none}.league-badge img{width:21px;height:21px;object-fit:contain;position:absolute;inset:3px;margin:auto}.competition{display:inline-flex;align-items:center;gap:7px;min-width:0}.competition-crest{width:17px;height:17px;object-fit:contain;flex:none}.competition>span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.team-crest{object-fit:contain;flex:none}
+
+
+/* GoalLive premium league identity and fluid date navigation */
+.league-panel .league-row{min-height:58px;padding:9px 15px;gap:11px;border-color:rgba(91,126,154,.15)}
+.league-panel .league-row:hover{background:linear-gradient(90deg,rgba(37,229,138,.09),rgba(17,42,63,.45));padding-right:18px}
+.league-badge.league-logo{width:38px;height:38px;flex:0 0 38px;border-radius:11px;background:linear-gradient(145deg,#132b40,#0a1a2a);border:1px solid rgba(121,159,188,.16);padding:6px;box-shadow:inset 0 1px 0 rgba(255,255,255,.04)}
+.league-logo img{display:block;width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 2px 3px rgba(0,0,0,.2))}
+.league-logo.egypt-mark{color:#f4ce78;font-size:12px;letter-spacing:.5px;font-weight:900}
+.league-name{display:flex;flex-direction:column;gap:2px;font-weight:800;line-height:1.4}.league-name small{font-size:9px;font-weight:600;color:#718da5;transition:color .18s}.league-row:hover .league-name small{color:var(--green)}
+.league-panel .chevron{font-size:15px;color:#6f8ba5;transition:transform .18s,color .18s}.league-row:hover .chevron{transform:translate(-2px,-2px);color:var(--green)}
+.date-picker{padding:4px;border:1px solid rgba(100,140,171,.18);border-radius:12px;background:rgba(5,17,29,.58);gap:3px}
+.date-picker .date-choice,.date-picker .date-step{height:34px;min-width:36px;border:1px solid transparent;border-radius:8px;background:transparent;color:#8fa7bd;font-size:10px;font-weight:800;transition:background .18s,border-color .18s,color .18s,transform .18s}
+.date-picker .date-choice{min-width:48px;padding:0 10px}.date-picker .date-choice:hover,.date-picker .date-step:hover{background:rgba(255,255,255,.055);color:var(--text);border-color:rgba(130,164,190,.18)}
+.date-picker .date-choice.is-current{background:linear-gradient(135deg,#27e58b,#17bf75);border-color:transparent;color:#052015;box-shadow:0 4px 14px rgba(37,229,138,.18)}
+.date-picker .date-choice:active,.date-picker .date-step:active{transform:scale(.96)}.date-picker button:focus-visible,.league-row:focus-visible{outline:2px solid var(--green);outline-offset:2px}
+body.light .date-picker{background:#f0f5f9;border-color:#d7e2ed}body.light .date-picker .date-choice,body.light .date-picker .date-step{color:#536b80}body.light .date-picker .date-choice.is-current{color:#052015}body.light .league-name small{color:#6b8094}
+@media(max-width:520px){.date-picker{max-width:100%;gap:2px;padding:3px}.date-picker .date-choice{min-width:43px;padding:0 7px;font-size:10px}.date-picker .date-step{min-width:28px;width:28px}.fixture-heading{gap:8px}}
+@media(prefers-reduced-motion:reduce){.league-panel .league-row,.league-panel .chevron,.date-picker button{transition:none!important}}
