@@ -14,8 +14,7 @@ export async function onRequestGet({ request, env }) {
   }
 
   try {
-    const providerUrl = new URL("https://api.football-data.org/v4/matches");
-    providerUrl.searchParams.set("ids", id);
+    const providerUrl = new URL(`https://api.football-data.org/v4/matches/${id}`);
     const response = await fetch(providerUrl.toString(), {
       headers: {
         "X-Auth-Token": token,
