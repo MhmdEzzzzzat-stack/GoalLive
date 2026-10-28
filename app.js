@@ -1,4 +1,6 @@
-const state={date:new Date(),filter:"all",matches:[],loading:false,lastUpdated:null,apiCooldownUntil:0,favoritesOnly:false,favoriteIds:[],search:""};\nconst matchResponseCache=new Map();\nconst MATCH_CACHE_TTL=90000;
+const state={date:new Date(),filter:"all",matches:[],loading:false,lastUpdated:null,apiCooldownUntil:0,favoritesOnly:false,favoriteIds:[],search:""};
+const matchResponseCache=new Map();
+const MATCH_CACHE_TTL=90000;
 const $=s=>document.querySelector(s);
 const list=$("#matches-list"),statusEl=$("#status-message"),empty=$("#empty-state");
 try{state.favoriteIds=JSON.parse(localStorage.getItem("goallive-favorites")||"[]").map(String)}catch{state.favoriteIds=[]}
