@@ -104,7 +104,7 @@ async function load({quiet=false}={}){
   statusEl.className="status-message";
   statusEl.textContent=state.matches.length?`تم تحميل ${state.matches.length} مباراة • آخر تحديث ${time(state.lastUpdated.toISOString())}`:"لا توجد مباريات في مصدر البيانات لهذا اليوم، أو أن البطولة غير متاحة في خطتك.";
   const updated=$("#updated-at");if(updated)updated.textContent=`آخر تحديث ${time(state.lastUpdated.toISOString())}`;
-  const today=$("#today-btn");if(today)today.textContent=labelDate(state.date);render();
+  syncDateChoices();render();
  }catch(e){
   if(controller!==activeMatchesController)return;
   if(e.name==="AbortError"){
@@ -144,9 +144,13 @@ async function openMatchDetail(id){const b=ensureDetailModal(),content=b.querySe
 
 injectPhaseTwoStyle();
 document.querySelectorAll(".tab").forEach(b=>b.addEventListener("click",()=>{document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));b.classList.add("active");state.filter=b.dataset.filter;render()}));
-$("#prev-day")?.addEventListener("click",()=>{state.date=shiftCairoDate(state.date,-1);load()});
-$("#next-day")?.addEventListener("click",()=>{state.date=shiftCairoDate(state.date,1);load()});
-$("#today-btn")?.addEventListener("click",()=>{state.date=dateFromCairoKey(fmtDate(new Date()));load()});
+function selectCairoDate(date){state.date=dateFromCairoKey(fmtDate(date));syncDateChoices();load()}
+function syncDateChoices(){const current=fmtDate(state.date),todayKey=fmtDate(new Date());const choices=[["#yesterday-btn",shiftCairoDate(new Date(),-1)],["#today-btn",new Date()],["#tomorrow-btn",shiftCairoDate(new Date(),1)]];for(const [selector,date] of choices){const button=$(selector);if(!button)continue;const active=current===fmtDate(date);button.classList.toggle("is-current",active);button.setAttribute("aria-pressed",String(active))}const heading=$(".fixture-heading h2");if(heading)heading.textContent=current===todayKey?"مباريات اليوم":current===fmtDate(shiftCairoDate(new Date(),-1))?"مباريات أمس":current===fmtDate(shiftCairoDate(new Date(),1))?"مباريات غدًا":"مباريات "+fullDate(state.date)}
+$("#prev-day")?.addEventListener("click",()=>selectCairoDate(shiftCairoDate(state.date,-1)));
+$("#next-day")?.addEventListener("click",()=>selectCairoDate(shiftCairoDate(state.date,1)));
+$("#yesterday-btn")?.addEventListener("click",()=>selectCairoDate(shiftCairoDate(new Date(),-1)));
+$("#tomorrow-btn")?.addEventListener("click",()=>selectCairoDate(shiftCairoDate(new Date(),1)));
+$("#today-btn")?.addEventListener("click",()=>selectCairoDate(new Date()));
 $("#refresh-btn")?.addEventListener("click",()=>load());
 $("#match-search")?.addEventListener("input",e=>{state.search=e.target.value;render()});
 $("#favorites-filter")?.addEventListener("click",()=>{state.favoritesOnly=!state.favoritesOnly;render()});
@@ -154,4 +158,4 @@ $("#year")&&($("#year").textContent=Number(fmtDate(new Date()).slice(0,4)));
 $("#theme-toggle")?.addEventListener("click",()=>{document.body.classList.toggle("light");localStorage.setItem("goallive-theme",document.body.classList.contains("light")?"light":"dark")});
 if(localStorage.getItem("goallive-theme")==="light")document.body.classList.add("light");
 $("#mobile-menu")?.addEventListener("click",()=>document.querySelector(".main-nav")?.classList.toggle("nav-open"));
-injectPhaseOneStyle();addPhaseOneElements();load();setInterval(()=>{if(document.visibilityState==="visible"&&fmtDate(state.date)===fmtDate(new Date())&&Date.now()>=state.apiCooldownUntil)load({quiet:true})},120000);
+injectPhaseOneStyle();addPhaseOneElements();syncDateChoices();load();setInterval(()=>{if(document.visibilityState==="visible"&&fmtDate(state.date)===fmtDate(new Date())&&Date.now()>=state.apiCooldownUntil)load({quiet:true})},120000);
