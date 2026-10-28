@@ -1,8 +1,7 @@
 export async function onRequestGet({ env }) {
-  const token = typeof env?.FOOTBALL_API_TOKEN === "string"
-    ? env.FOOTBALL_API_TOKEN.trim()
+  const token = typeof env?.API_FOOTBALL_KEY === "string"
+    ? env.API_FOOTBALL_KEY.trim()
     : "";
-
   return new Response(JSON.stringify({
     ok: true,
     apiTokenConfigured: token.length > 0,
