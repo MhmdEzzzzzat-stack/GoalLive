@@ -61,3 +61,17 @@ button{font:inherit}
 .shortcuts-label i,.shortcut-live-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 0 4px rgba(37,229,138,.1)}
 .shortcut-live-dot{width:6px;height:6px;box-shadow:none}
 @media(max-width:760px){.sports-shortcuts-inner{padding:0 12px;min-height:44px;gap:4px}.sports-shortcuts a{font-size:11px;padding:6px 10px}.shortcuts-label{font-size:11px;margin-left:3px;padding-left:10px}}
+
+
+/* Coming soon — clearly marked roadmap cards */
+.coming-soon-section{margin:0 0 22px;padding:18px;border:1px solid rgba(37,229,138,.15);border-radius:18px;background:linear-gradient(145deg,rgba(8,29,43,.9),rgba(5,18,30,.94))}
+.coming-soon-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:11px}
+.coming-soon-card{display:flex;align-items:flex-start;gap:12px;min-width:0;padding:15px;border:1px solid rgba(255,255,255,.07);border-radius:14px;background:rgba(255,255,255,.025)}
+.coming-soon-icon{display:grid;place-items:center;flex:0 0 42px;width:42px;height:42px;border:1px solid rgba(37,229,138,.17);border-radius:12px;background:rgba(37,229,138,.08);font-size:20px}
+.coming-soon-label{display:inline-block;margin-bottom:5px;color:#65f0ad;font-size:9px;font-weight:900}
+.coming-soon-card h3{margin:0 0 6px;color:#edf6fc;font-size:12px;font-weight:900}
+.coming-soon-card p{margin:0;color:#8fa7bb;font-size:10px;line-height:1.8}
+@media(max-width:900px){.coming-soon-grid{grid-template-columns:1fr}.coming-soon-card{padding:12px}.coming-soon-section{padding:14px}}
+body.light .coming-soon-section{background:linear-gradient(145deg,#f7fcff,#edf6f9);border-color:#d5e9e2}
+body.light .coming-soon-card{background:#fff;border-color:#e0e9ef}
+body.light .coming-soon-card h3{color:#142c40}
