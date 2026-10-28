@@ -79,7 +79,7 @@ test("API rejects malformed and impossible dates before cache/provider access", 
   for (const date of ["", "2026/10/27", "2026-02-30", "2026-13-01", "abc"]) {
     const response = await handler({
       request: new Request("https://example.test/api/matches?date=" + encodeURIComponent(date)),
-      env: { FOOTBALL_API_TOKEN: "test-token" }
+      env: { API_FOOTBALL_KEY: "test-token" }
     });
     assert.equal(response.status, 400, `date should be rejected: ${date}`);
     assert.match((await response.json()).error, /تاريخ غير صالح/);
@@ -91,7 +91,7 @@ test("API rejects malformed and impossible dates before cache/provider access", 
 test("health endpoint reports token configuration without exposing token", async () => {
   const handler = loadHandler(healthSource, "onRequestGet");
   const secret = "never-return-this-token";
-  const response = await handler({ env: { FOOTBALL_API_TOKEN: secret } });
+  const response = await handler({ env: { API_FOOTBALL_KEY: secret } });
   assert.equal(response.status, 200);
   const body = await response.text();
   assert.ok(body.includes('"apiTokenConfigured":true'));
@@ -101,7 +101,7 @@ test("health endpoint reports token configuration without exposing token", async
 
 test("health endpoint treats missing and whitespace-only tokens as unconfigured", async () => {
   const handler = loadHandler(healthSource, "onRequestGet");
-  for (const env of [{}, { FOOTBALL_API_TOKEN: "   " }, { FOOTBALL_API_TOKEN: 123 }]) {
+  for (const env of [{}, { API_FOOTBALL_KEY: "   " }, { API_FOOTBALL_KEY: 123 }]) {
     const response = await handler({ env });
     assert.equal((await response.json()).apiTokenConfigured, false);
   }
