@@ -1,4 +1,4 @@
-const state={date:new Date(),filter:"all",matches:[],loading:false,lastUpdated:null,apiCooldownUntil:0,favoritesOnly:false,favoriteIds:[],search:""};
+const state={date:new Date(),filter:"all",matches:[],loading:false,lastUpdated:null,apiCooldownUntil:0,favoritesOnly:false,favoriteIds:[],search:""};\nconst matchResponseCache=new Map();\nconst MATCH_CACHE_TTL=90000;
 const $=s=>document.querySelector(s);
 const list=$("#matches-list"),statusEl=$("#status-message"),empty=$("#empty-state");
 try{state.favoriteIds=JSON.parse(localStorage.getItem("goallive-favorites")||"[]").map(String)}catch{state.favoriteIds=[]}
@@ -81,6 +81,14 @@ let activeMatchesController=null,activeMatchesDate="";
 async function load({quiet=false}={}){
  const requestedDate=fmtDate(state.date);
  if(state.loading&&activeMatchesDate===requestedDate)return;
+ const memo=matchResponseCache.get(requestedDate);
+ if(memo&&Date.now()-memo.savedAt<MATCH_CACHE_TTL){
+  state.matches=memo.matches;state.lastUpdated=new Date(memo.updatedAt||memo.savedAt);
+  statusEl.className="status-message";
+  statusEl.textContent=`تم تحميل ${state.matches.length} مباراة • بيانات محفوظة مؤقتًا`;
+  const updated=$("#updated-at");if(updated)updated.textContent=`آخر تحديث ${time(state.lastUpdated.toISOString())}`;
+  syncDateChoices();render();return;
+ }
  if(Date.now()<state.apiCooldownUntil){
   if(!quiet)statusEl.textContent=`تم إيقاف التحديث مؤقتًا لتجنب تجاوز حد الطلبات. جرّب بعد ${Math.ceil((state.apiCooldownUntil-Date.now())/60000)} دقائق.`;
   return;
@@ -100,7 +108,7 @@ async function load({quiet=false}={}){
   }
   if(!res.ok)throw new Error(data.error||"تعذر تحميل البيانات");
   if(controller!==activeMatchesController||requestedDate!==fmtDate(state.date))return;
-  state.apiCooldownUntil=0;state.matches=Array.isArray(data.matches)?data.matches:[];state.lastUpdated=new Date();
+  state.apiCooldownUntil=0;state.matches=Array.isArray(data.matches)?data.matches:[];state.lastUpdated=new Date();matchResponseCache.set(requestedDate,{matches:state.matches,savedAt:Date.now(),updatedAt:data.updatedAt||state.lastUpdated.toISOString()});
   statusEl.className="status-message";
   statusEl.textContent=state.matches.length?`تم تحميل ${state.matches.length} مباراة • آخر تحديث ${time(state.lastUpdated.toISOString())}`:"لا توجد مباريات في مصدر البيانات لهذا اليوم، أو أن البطولة غير متاحة في خطتك.";
   const updated=$("#updated-at");if(updated)updated.textContent=`آخر تحديث ${time(state.lastUpdated.toISOString())}`;
