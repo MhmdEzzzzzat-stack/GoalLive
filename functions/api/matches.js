@@ -59,6 +59,18 @@ function mapStatus(s) {
   if(["CANC","ABD","AWD","WO"].includes(s))return "CANCELLED";
   return "SCHEDULED";
 }
-function hasProviderErrors(errors) {\n  if(errors==null)return false;\n  if(Array.isArray(errors))return errors.length>0;\n  if(typeof errors==="object")return Object.values(errors).some(v=>v!==null&&v!==undefined&&v!==""&&v!==false);\n  return Boolean(errors);\n}\nfunction providerErrorMessage(errors) {\n  const raw=typeof errors==="object"?Object.values(errors).filter(Boolean).join("، "):String(errors||"");\n  if(/plan|subscription|access|limit|free/i.test(raw))return "مصدر البيانات رفض طلب المباريات بسبب صلاحيات الخطة أو حدود الوصول؛ راجع صلاحيات API-Football.";\n  if(/token|key|authori/i.test(raw))return "مفتاح API-Football غير صالح أو غير مخوّل لهذا الطلب.";\n  return "تعذر جلب المباريات من API-Football."+(raw?" ("+raw+")":"");\n}\nfunction json(data,status=200,extra={}) {
+function hasProviderErrors(errors) {
+  if(errors==null)return false;
+  if(Array.isArray(errors))return errors.length>0;
+  if(typeof errors==="object")return Object.values(errors).some(v=>v!==null&&v!==undefined&&v!==""&&v!==false);
+  return Boolean(errors);
+}
+function providerErrorMessage(errors) {
+  const raw=typeof errors==="object"?Object.values(errors).filter(Boolean).join("، "):String(errors||"");
+  if(/plan|subscription|access|limit|free/i.test(raw))return "مصدر البيانات رفض طلب المباريات بسبب صلاحيات الخطة أو حدود الوصول؛ راجع صلاحيات API-Football.";
+  if(/token|key|authori/i.test(raw))return "مفتاح API-Football غير صالح أو غير مخوّل لهذا الطلب.";
+  return "تعذر جلب المباريات من API-Football."+(raw?" ("+raw+")":"");
+}
+function json(data,status=200,extra={}) {
   return new Response(JSON.stringify(data),{status,headers:{"Content-Type":"application/json; charset=utf-8","Cache-Control":"no-store",...extra}});
 }
