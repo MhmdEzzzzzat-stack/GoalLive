@@ -3,7 +3,7 @@ export async function onRequestGet({request,env}) {
   if(!token)return json({error:"مفتاح API-Football غير مضبوط. أضف API_FOOTBALL_KEY في إعدادات Cloudflare Pages."},503);
 
   const url=new URL(request.url),id=url.searchParams.get("id");
-  if(!id||!/^\\d{1,12}$/.test(id))return json({error:"رقم المباراة غير صالح."},400);
+  if(!id||!/^\d{1,12}$/.test(id))return json({error:"رقم المباراة غير صالح."},400);
 
   const headers={"x-apisports-key":token};
   try {
