@@ -25,7 +25,7 @@ test("match endpoint rejects invalid IDs before calling provider", async () => {
   assert.equal(calls, 0);
 });
 
-test("match endpoint requests fixture, events and lineups without exposing key", async () => {
+test("match endpoint requests only fixture details and never exposes key", async () => {
   const secret = "never-return-this-token";
   const urls = [];
   const handler = loadHandler(async (url, options) => {
@@ -39,13 +39,14 @@ test("match endpoint requests fixture, events and lineups without exposing key",
   assert.equal(response.status,200);
   const body=await response.json();
   assert.equal(body.match.id,42);
-  assert.equal(body.match.goals.length,1);
-  assert.equal(body.match.homeTeam.lineup[0].name,"Keeper");
+  assert.equal(body.match.goals.length,0);
+  assert.equal(body.match.homeTeam.lineup.length,0);
+  assert.equal(body.match.awayTeam.lineup.length,0);
   assert.ok(!JSON.stringify(body).includes(secret));
-  assert.equal(urls.length,3);
+  assert.equal(urls.length,1);
   assert.ok(urls.some(u=>u.pathname.endsWith("/fixtures")&&u.searchParams.get("id")==="42"));
-  assert.ok(urls.some(u=>u.pathname.endsWith("/fixtures/events")&&u.searchParams.get("fixture")==="42"));
-  assert.ok(urls.some(u=>u.pathname.endsWith("/fixtures/lineups")&&u.searchParams.get("fixture")==="42"));
+  assert.ok(!urls.some(u=>u.pathname.endsWith("/fixtures/events")));
+  assert.ok(!urls.some(u=>u.pathname.endsWith("/fixtures/lineups")));
 });
 
 test("missing API-Football key is rejected without provider access", async () => {
@@ -60,5 +61,5 @@ test("provider rate limiting is translated to 429 with Retry-After", async () =>
   const handler = loadHandler(async () => new Response(JSON.stringify({ errors: ["rate limited"] }), { status: 429 }));
   const response = await handler({ request: request("42"), env: { API_FOOTBALL_KEY: "test-token" } });
   assert.equal(response.status, 429);
-  assert.equal(response.headers.get("retry-after"), "300");
+  assert.equal(response.headers.get("retry-after"), "60");
 });
