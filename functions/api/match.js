@@ -46,7 +46,7 @@ export async function onRequestGet({ request, env }) {
       return json({ error: message, providerStatus }, status, headers);
     }
 
-    const match = (data.matches || []).find(item => String(item.id) === id);
+    const match = data && String(data.id) === id ? data : (data.matches || []).find(item => String(item.id) === id);
     if (!match) {
       return json({
         error: "لم يُرجع المزوّد بيانات لهذه المباراة.",
