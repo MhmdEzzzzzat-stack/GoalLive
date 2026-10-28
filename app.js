@@ -175,6 +175,7 @@ async function openMatchDetail(id){const b=ensureDetailModal(),content=b.querySe
 
 injectPhaseTwoStyle();
 document.querySelectorAll(".tab").forEach(b=>b.addEventListener("click",()=>{document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));b.classList.add("active");state.filter=b.dataset.filter;state.visibleCount=30;render()}));
+document.querySelectorAll("[data-shortcut-filter]").forEach(link=>link.addEventListener("click",()=>{const filter=link.dataset.shortcutFilter;const tab=document.querySelector('.tab[data-filter="'+filter+'"]');if(tab)tab.click()}));
 document.querySelectorAll("[data-shortcut-filter]").forEach(link=>link.addEventListener("click",()=>{const filter=link.dataset.shortcutFilter;const tab=document.querySelector('.tab[data-filter="'+filter+'"]');if(tab)tab.click();}));
 $("#competition-filter")?.addEventListener("change",e=>{state.league=e.target.value;state.visibleCount=30;render()});
 $("#load-more-matches")?.addEventListener("click",()=>{state.visibleCount+=30;render()});
