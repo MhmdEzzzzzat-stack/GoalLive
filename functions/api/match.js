@@ -7,53 +7,33 @@ export async function onRequestGet({request,env}) {
 
   const headers={"x-apisports-key":token};
   try {
+    // One provider request per detail view. Events and lineups were causing two
+    // additional API calls for every click and quickly exhausting per-minute quotas.
     const fixtureUrl=new URL("https://v3.football.api-sports.io/fixtures");
     fixtureUrl.searchParams.set("id",id);
-    // Fixture data is essential; events and lineups are optional coverage and must not
-    // make the whole details dialog fail if either endpoint is temporarily unavailable.
-    const settled=await Promise.allSettled([
-      fetch(fixtureUrl.toString(),{headers}),
-      fetch("https://v3.football.api-sports.io/fixtures/events?fixture="+encodeURIComponent(id),{headers}),
-      fetch("https://v3.football.api-sports.io/fixtures/lineups?fixture="+encodeURIComponent(id),{headers})
-    ]);
-    if(settled[0].status==="rejected") {
-      return json({error:"تعذر الاتصال بمصدر بيانات المباراة. حاول مرة أخرى بعد قليل."},502);
-    }
-    const fixtureResponse=settled[0].value;
+    const fixtureResponse=await fetch(fixtureUrl.toString(),{headers});
     const fixtureData=await fixtureResponse.json().catch(()=>({}));
-    const optionalJson=async result=>{
-      if(result.status!=="fulfilled"||!result.value.ok)return {response:[]};
-      return result.value.json().catch(()=>({response:[]}));
-    };
-    const [eventsData,lineupsData]=await Promise.all([
-      optionalJson(settled[1]),optionalJson(settled[2])
-    ]);
 
     if(!fixtureResponse.ok||hasProviderErrors(fixtureData?.errors)) {
       const status=fixtureResponse.status===429?429:fixtureResponse.status===403?403:502;
-      return json({error:status===429?"تم تجاوز حد طلبات API-Football. حاول لاحقًا.":status===403?"مفتاح API-Football غير صالح أو لا يملك صلاحية الوصول.":providerErrorMessage(fixtureData?.errors),providerStatus:fixtureResponse.status,details:fixtureData?.errors||undefined},status,status===429?{"Retry-After":"300"}:{});
+      return json({error:status===429?"تم تجاوز حد طلبات API-Football. انتظر دقيقة قبل إعادة المحاولة.":status===403?"مفتاح API-Football غير صالح أو لا يملك صلاحية الوصول.":providerErrorMessage(fixtureData?.errors),providerStatus:fixtureResponse.status,details:fixtureData?.errors||undefined},status,status===429?{"Retry-After":"60","Cache-Control":"no-store"}:{});
     }
 
     const raw=Array.isArray(fixtureData.response)?fixtureData.response[0]:null;
     if(!raw)return json({error:"لم يتم العثور على المباراة في API-Football."},404);
     const match=normalizeFixture(raw);
-    const lineupRows=Array.isArray(lineupsData.response)?lineupsData.response:[];
-    const homeRaw=lineupRows.find(x=>String(x.team?.id)===String(raw.teams?.home?.id));
-    const awayRaw=lineupRows.find(x=>String(x.team?.id)===String(raw.teams?.away?.id));
-    match.homeTeam.lineup=normalizePlayers(homeRaw?.startXI);
-    match.awayTeam.lineup=normalizePlayers(awayRaw?.startXI);
-    match.homeTeam.substitutes=normalizePlayers(homeRaw?.substitutes);
-    match.awayTeam.substitutes=normalizePlayers(awayRaw?.substitutes);
-    match.homeTeam.formation=homeRaw?.formation||null;
-    match.awayTeam.formation=awayRaw?.formation||null;
+    match.homeTeam.lineup=[];
+    match.awayTeam.lineup=[];
+    match.homeTeam.substitutes=[];
+    match.awayTeam.substitutes=[];
+    match.homeTeam.formation=null;
+    match.awayTeam.formation=null;
+    match.goals=[];
+    match.bookings=[];
+    match.substitutions=[];
 
-    const events=Array.isArray(eventsData.response)?eventsData.response:[];
-    match.goals=events.filter(e=>e.type==="Goal").map(e=>({minute:e.time?.elapsed,player:{name:e.player?.name},team:{name:e.team?.name},type:e.detail,assist:{name:e.assist?.name}}));
-    match.bookings=events.filter(e=>e.type==="Card").map(e=>({minute:e.time?.elapsed,player:{name:e.player?.name},team:{name:e.team?.name},card:e.detail}));
-    match.substitutions=events.filter(e=>e.type==="subst"||e.type==="Subst").map(e=>({minute:e.time?.elapsed,team:{name:e.team?.name},playerOut:{name:e.player?.name},playerIn:{name:e.assist?.name}}));
+    return json({match,diagnostics:{lineupsAvailable:false,homeLineupCount:0,awayLineupCount:0,eventsAvailable:false,eventsCount:0,coverageWarning:"تم عرض بيانات المباراة الأساسية لتقليل استهلاك حد API؛ تفاصيل الأحداث والتشكيلات غير محمّلة."},updatedAt:new Date().toISOString()},200,{"Cache-Control":"public, max-age=60, s-maxage=300"});
 
-    const eventsCount=match.goals.length+match.bookings.length+match.substitutions.length;
-    return json({match,diagnostics:{lineupsAvailable:match.homeTeam.lineup.length>0||match.awayTeam.lineup.length>0,homeLineupCount:match.homeTeam.lineup.length,awayLineupCount:match.awayTeam.lineup.length,eventsAvailable:eventsCount>0,eventsCount,coverageWarning:lineupRows.length===0?"قد لا تكون التشكيلات متاحة لهذه البطولة أو المباراة.":null},updatedAt:new Date().toISOString()},200,{"Cache-Control":"public, max-age=20, s-maxage=30"});
   } catch {
     return json({error:"تعذر الاتصال بـ API-Football."},502);
   }
