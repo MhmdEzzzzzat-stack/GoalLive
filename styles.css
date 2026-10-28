@@ -119,3 +119,6 @@ body.light .date-calendar{background:#fff;border-color:#d7e2ed;color:#087c4b}
 @media(max-width:620px){.fixture-heading{position:sticky;top:112px;z-index:15;background:rgba(7,21,36,.96);backdrop-filter:blur(14px);margin:0 -1px;padding:12px 12px 10px;border-bottom:1px solid rgba(100,140,171,.18);border-radius:12px 12px 0 0;align-items:center;box-shadow:0 8px 22px rgba(0,0,0,.12)}body.light .fixture-heading{background:rgba(255,255,255,.96)}.date-picker{flex-wrap:nowrap;gap:1px}.date-picker .date-choice{min-width:39px;padding:0 5px;font-size:9px}.date-picker .date-step{min-width:25px;width:25px}.date-calendar{width:31px;height:32px;font-size:15px}.fixtures-panel{overflow:visible}.fixture-heading>div:first-child{min-width:0}.fixture-heading h2{font-size:15px;white-space:nowrap}}
 @media(max-width:380px){.fixture-heading{gap:5px;padding-inline:8px}.date-picker .date-choice{min-width:34px;padding:0 3px;font-size:8px}.date-picker .date-step{min-width:22px;width:22px}.date-calendar{width:28px}}
 @media(prefers-reduced-motion:reduce){.date-calendar{transition:none}}
+
+/* Keep home team, home score, away score and away team in consistent left-to-right order. */
+.match-body{direction:ltr}.match-body>.team{direction:rtl}.live-teams{direction:ltr}.live-teams>.live-team{direction:rtl}.detail-hero{direction:ltr}.detail-hero>.detail-team{direction:rtl}
