@@ -66,10 +66,11 @@ function hasProviderErrors(errors) {
   return Boolean(errors);
 }
 function providerErrorMessage(errors) {
-  const raw=typeof errors==="object"?Object.values(errors).filter(Boolean).join("، "):String(errors||"");
-  if(/plan|subscription|access|limit|free/i.test(raw))return "مصدر البيانات رفض طلب المباريات بسبب صلاحيات الخطة أو حدود الوصول؛ راجع صلاحيات API-Football.";
-  if(/token|key|authori/i.test(raw))return "مفتاح API-Football غير صالح أو غير مخوّل لهذا الطلب.";
-  return "تعذر جلب المباريات من API-Football."+(raw?" ("+raw+")":"");
+  const raw=typeof errors==="object"?Object.values(errors).filter(Boolean).map(v=>typeof v==="string"?v:JSON.stringify(v)).join("، "):String(errors||"");
+  const suffix=raw?" (رد API-Football: "+raw.slice(0,500)+")":"";
+  if(/plan|subscription|access|limit|free|quota/i.test(raw))return "رفض API-Football طلب المباريات بسبب قيود الخطة أو حد الاستخدام"+suffix;
+  if(/token|key|authori|credential/i.test(raw))return "مفتاح API-Football غير صالح أو غير مخوّل"+suffix;
+  return "تعذر جلب المباريات من API-Football"+suffix;
 }
 function json(data,status=200,extra={}) {
   return new Response(JSON.stringify(data),{status,headers:{"Content-Type":"application/json; charset=utf-8","Cache-Control":"no-store",...extra}});
