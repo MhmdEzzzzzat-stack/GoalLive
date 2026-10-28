@@ -145,12 +145,13 @@ async function openMatchDetail(id){const b=ensureDetailModal(),content=b.querySe
 injectPhaseTwoStyle();
 document.querySelectorAll(".tab").forEach(b=>b.addEventListener("click",()=>{document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));b.classList.add("active");state.filter=b.dataset.filter;render()}));
 function selectCairoDate(date){state.date=dateFromCairoKey(fmtDate(date));syncDateChoices();load()}
-function syncDateChoices(){const current=fmtDate(state.date),todayKey=fmtDate(new Date());const choices=[["#yesterday-btn",shiftCairoDate(new Date(),-1)],["#today-btn",new Date()],["#tomorrow-btn",shiftCairoDate(new Date(),1)]];for(const [selector,date] of choices){const button=$(selector);if(!button)continue;const active=current===fmtDate(date);button.classList.toggle("is-current",active);button.setAttribute("aria-pressed",String(active))}const heading=$(".fixture-heading h2");if(heading)heading.textContent=current===todayKey?"مباريات اليوم":current===fmtDate(shiftCairoDate(new Date(),-1))?"مباريات أمس":current===fmtDate(shiftCairoDate(new Date(),1))?"مباريات غدًا":"مباريات "+fullDate(state.date)}
+function syncDateChoices(){const current=fmtDate(state.date),todayKey=fmtDate(new Date());const dateInput=$("#date-input");if(dateInput)dateInput.value=current;const choices=[["#yesterday-btn",shiftCairoDate(new Date(),-1)],["#today-btn",new Date()],["#tomorrow-btn",shiftCairoDate(new Date(),1)]];for(const [selector,date] of choices){const button=$(selector);if(!button)continue;const active=current===fmtDate(date);button.classList.toggle("is-current",active);button.setAttribute("aria-pressed",String(active))}const heading=$(".fixture-heading h2");if(heading)heading.textContent=current===todayKey?"مباريات اليوم":current===fmtDate(shiftCairoDate(new Date(),-1))?"مباريات أمس":current===fmtDate(shiftCairoDate(new Date(),1))?"مباريات غدًا":"مباريات "+fullDate(state.date)}
 $("#prev-day")?.addEventListener("click",()=>selectCairoDate(shiftCairoDate(state.date,-1)));
 $("#next-day")?.addEventListener("click",()=>selectCairoDate(shiftCairoDate(state.date,1)));
 $("#yesterday-btn")?.addEventListener("click",()=>selectCairoDate(shiftCairoDate(new Date(),-1)));
 $("#tomorrow-btn")?.addEventListener("click",()=>selectCairoDate(shiftCairoDate(new Date(),1)));
 $("#today-btn")?.addEventListener("click",()=>selectCairoDate(new Date()));
+$("#date-input")?.addEventListener("change",e=>{if(/^\d{4}-\d{2}-\d{2}$/.test(e.target.value))selectCairoDate(dateFromCairoKey(e.target.value))});
 $("#refresh-btn")?.addEventListener("click",()=>load());
 $("#match-search")?.addEventListener("input",e=>{state.search=e.target.value;render()});
 $("#favorites-filter")?.addEventListener("click",()=>{state.favoritesOnly=!state.favoritesOnly;render()});
