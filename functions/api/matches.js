@@ -3,7 +3,7 @@ export async function onRequestGet({request,env}) {
   if(!token)return json({error:"مفتاح API-Football غير مضبوط. أضف API_FOOTBALL_KEY في إعدادات Cloudflare Pages."},503);
 
   const url=new URL(request.url),date=url.searchParams.get("date");
-  if(!date||!/^\\d{4}-\\d{2}-\\d{2}$/.test(date))return json({error:"تاريخ غير صالح."},400);
+  if(!date||!/^\d{4}-\d{2}-\d{2}$/.test(date))return json({error:"تاريخ غير صالح."},400);
   const selected=new Date(date+"T00:00:00Z");
   if(Number.isNaN(selected.getTime())||selected.toISOString().slice(0,10)!==date)return json({error:"تاريخ غير صالح."},400);
 
