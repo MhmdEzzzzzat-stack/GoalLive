@@ -1,4 +1,4 @@
-const state={date:new Date(),filter:"all",league:"all",visibleCount:30,matches:[],loading:false,lastUpdated:null,apiCooldownUntil:0,favoritesOnly:false,favoriteIds:[],search:""};
+const state={date:new Date(),filter:"all",league:"all",visibleCount:30,matches:[],dataDate:"",loading:false,lastUpdated:null,apiCooldownUntil:0,favoritesOnly:false,favoriteIds:[],search:""};
 const matchResponseCache=new Map();
 const MATCH_CACHE_TTL=90000;
 const $=s=>document.querySelector(s);
@@ -93,7 +93,14 @@ async function load({quiet=false}={}){
  if(state.loading&&activeMatchesDate===requestedDate)return;
  const memo=matchResponseCache.get(requestedDate);
  if(memo&&Date.now()-memo.savedAt<MATCH_CACHE_TTL){
-  state.matches=memo.matches;state.lastUpdated=new Date(memo.updatedAt||memo.savedAt);
+  state.matches=memo.matches;state.dataDate=requestedDate;state.lastUpdated=new Date(memo.updatedAt||memo.savedAt);
+  const leagueSelect=$("#competition-filter");
+  if(leagueSelect){
+   const previous=state.league;
+   const leagues=[...new Map(state.matches.map(m=>[String(m.competition?.id??m.competition?.name),{id:String(m.competition?.id??m.competition?.name),name:m.competition?.name||"بطولة"}])).values()].sort((a,b)=>a.name.localeCompare(b.name,"ar"));
+   leagueSelect.innerHTML=`<option value="all">كل البطولات</option>${leagues.map(l=>`<option value="${esc(l.id)}">${esc(l.name)}</option>`).join("")}`;
+   leagueSelect.value=leagues.some(l=>l.id===previous)?previous:"all";state.league=leagueSelect.value;
+  }
   statusEl.className="status-message";
   statusEl.textContent=`تم تحميل ${state.matches.length} مباراة • بيانات محفوظة مؤقتًا`;
   const updated=$("#updated-at");if(updated)updated.textContent=`آخر تحديث ${time(state.lastUpdated.toISOString())}`;
@@ -104,6 +111,7 @@ async function load({quiet=false}={}){
   return;
  }
  if(activeMatchesController)activeMatchesController.abort();
+ if(state.dataDate!==requestedDate){state.matches=[];state.dataDate=requestedDate;state.visibleCount=30;render();}
  const controller=new AbortController();activeMatchesController=controller;activeMatchesDate=requestedDate;
  const timeout=setTimeout(()=>controller.abort(),12000);
  setLoading(true);
@@ -118,7 +126,7 @@ async function load({quiet=false}={}){
   }
   if(!res.ok)throw new Error(data.error||"تعذر تحميل البيانات");
   if(controller!==activeMatchesController||requestedDate!==fmtDate(state.date))return;
-  state.apiCooldownUntil=0;state.matches=Array.isArray(data.matches)?data.matches:[];state.visibleCount=30;state.lastUpdated=new Date();
+  state.apiCooldownUntil=0;state.matches=Array.isArray(data.matches)?data.matches:[];state.dataDate=requestedDate;state.visibleCount=30;state.lastUpdated=new Date();
   const leagueSelect=$("#competition-filter");if(leagueSelect){const previous=state.league;const leagues=[...new Map(state.matches.map(m=>[String(m.competition?.id??m.competition?.name),{id:String(m.competition?.id??m.competition?.name),name:m.competition?.name||"بطولة"}])).values()].sort((a,b)=>a.name.localeCompare(b.name,"ar"));leagueSelect.innerHTML=`<option value="all">كل البطولات</option>${leagues.map(l=>`<option value="${esc(l.id)}">${esc(l.name)}</option>`).join("")}`;leagueSelect.value=leagues.some(l=>l.id===previous)?previous:"all";state.league=leagueSelect.value;}matchResponseCache.set(requestedDate,{matches:state.matches,savedAt:Date.now(),updatedAt:data.updatedAt||state.lastUpdated.toISOString()});
   statusEl.className="status-message";
   statusEl.textContent=state.matches.length?`تم تحميل ${state.matches.length} مباراة • آخر تحديث ${time(state.lastUpdated.toISOString())}`:"لا توجد مباريات في مصدر البيانات لهذا اليوم، أو أن البطولة غير متاحة في خطتك.";
